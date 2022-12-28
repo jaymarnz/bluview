@@ -1,0 +1,17 @@
+{
+  "name": "bluview",
+  "version": "1.0.0",
+  "description": "What's Playing Display for BluOS Streamers",
+  "author": "jaymarnz",
+  "license": "ISC",
+  "scripts": {
+    "build": "node build.js",
+    "clean": "del /F/Q .\\dist"
+  },
+  "devDependencies": {
+    "copy": "^0.3.2",
+    "fs-extra": "^11.1.0",
+    "html-minifier": "^4.0.0",
+    "inline-scripts": "^1.7.4"
+  }
+}

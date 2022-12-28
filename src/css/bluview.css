@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+* {
+  font-family: Roboto, Verdana, Arial, Helvetica, sans-serif;
+}
+
+body { 
+  background-color: black; 
+  color: #e3e3e3;
+  position: absolute;
+  font-size: 125%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+input[type="text"] {
+  height: 1.5em;
+  background-color: #c3c3c3;
+  color: black;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+input[type="button"] {
+  height: 2em;
+  font-size: 125%;
+  font-weight: bold;
+  min-width: 6em;
+  margin-top: 0.5em;
+  text-align: center;
+  background-color: chocolate;
+  color: #e3e3e3;
+}
+input[type="button"]:disabled {
+  background-color: #7e7e7e;
+  opacity: 25%;
+}
+
+form {
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0;
+}
+
+p {
+  margin-top: 0.25em;
+}
+
+.paraHead {
+  font-size: 110%;
+  font-weight: bold;
+}
+
+.run {
+  display: none;
+  height: 100%;
+}
+
+.config {
+  display: none;
+  height: 100%;
+}
+
+.notPlaying {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.notPlaying .timeOfDay {
+  text-align: center;
+  font-size: 12em;
+  font-weight: bold;
+}
+
+.playing {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.playingContainer {
+  display: flex;
+  height: 400px;
+  min-width: 0;
+}
+
+.left {
+  width: 400px;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-left: 15px;
+  min-width: 0;
+}
+
+.bottom {
+  margin-top: auto;
+}
+
+.text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.timeOfDay {
+  display: block;
+  font-size: 6em;
+  font-weight: bold;
+  line-height: 1em;
+}
+
+.today {
+  display: block;
+  text-align: center;
+  font-size: 2.5em;
+  padding-bottom: 0.5em;
+}
+
+#image {
+  width: 400px;
+  height: 400px;
+  padding-right: 20px
+}
+
+#title1 {
+  font-size: 3em;
+  font-weight: bold;
+}
+
+#title2 {
+  margin-block-start: 0.25em;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+#title3 {
+  margin-block-start: 0.25em;
+  font-size: 1.5em;
+  font-weight: normal;
+}
+
+#timeOfDay {
+  padding-top: 25px;
+}
+
+#serviceIcon {
+  display:block;
+  width: 32px;
+  height: 32px;
+}
+
+#serviceName, #quality, #streamFormat {
+  display: inline;
+  font-size: 1em;
+  font-weight: normal;
+}
+
+#errorMessage {
+  display: none;
+  color: red;
+  margin: .5em auto;
+  text-align: center;
+}
+
+#errorMessage p {
+  margin: 0;
+  line-height: 1.5em;
+}
+
+#spinner {
+  display: none;
+  margin: .5em auto;
+}

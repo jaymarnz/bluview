@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BluView: Display for BluOS Streamers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" sizes="120x120" href="favicon-120x120.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" 
+      integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer">
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.min.js"
+      integrity="sha512-HX+/SvM7094YZEKOCtG9EyjRYvK8dKlFhdYAnVCGNxMkA59BZNSZTZrqdDlLXp0O6/NjDb1uKnmutUeuzHb3iQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer">
+    </script>
+
+    <link rel="stylesheet" href="css/bluview.css">
+    <link rel="stylesheet" href="css/ldsRing.css">
+    
+    <script src="js/bluview.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+  </head>
+
+  <body>
+    <div class="run" id="run">
+      <div class="notPlaying" id="notPlaying">
+        <div>
+          <div class="timeOfDay"></div>
+          <div class="today"></div>
+        </div>
+      </div>
+
+      <div class="playing" id="playing">
+        <div class="playingContainer">
+          <div class="left">
+            <img id="image"/>
+          </div>
+
+          <div class="right">
+            <div class="text" id="title1"></div>
+            <div class="text" id="title2"></div>
+            <div class="text" id="title3"></div>
+            
+            <div class="timeOfDay" id="timeOfDay"></div>
+            
+            <div class="bottom">
+              <img id="serviceIcon"/>
+              <!-- <div id="serviceName"></div> -->
+              <div id="quality"></div>
+              <div id="streamFormat"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="config" id="config">
+      <div>
+        <h1>BluView - Display for BluOS&trade; Streamers</h1>
+        <p>This little web app should run in most modern browsers to continuously display 
+           what's playing. It includes the current time since it's handy to also use it
+           as a clock. And when nothing is playing it's just a clock.
+        </p>
+        <p><span class="paraHead">Privacy: </span>It runs entirely within your browser and
+           there is no server other than to provide this web page. No data is sent or stored
+           anywhere except it saves the IP address of your streamer within your browser's local
+           storage so you don't have to re-enter it.
+        </p>
+        <p><span class="paraHead">Configuration: </span>You only need to configure the IP
+           address of your streamer. You'll find this in the BluOS app under Help -> Diagnostics.
+           You should only need to do this once or if the address changes.
+        </p>
+        <form>
+          <div>
+            <label for="ip_address">Your BluOS streamer's IP Address:</label>
+            <input type="text" id="ip_address" name="ip_address" placeholder="eg. 192.168.1.50">
+          </div>
+          <input type="button" id="btnConfig" value="Configure">
+        </form>
+        <div class="lds-ring" id="spinner"><div></div><div></div><div></div><div></div></div>
+        <div id="errorMessage">
+          <p id="errorMessageText"></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
