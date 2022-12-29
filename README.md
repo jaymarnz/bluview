@@ -7,11 +7,11 @@ I run it on an old Android tablet I had lying around to create a dedicated displ
 
 It shows the current title, artist, album and cover art along with the quality and format. It also includes the current time of day:
 
-![](images/playing-sm.jpg)
+<kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/playing.jpg"></kbd>
 
 When nothing is playing it is just a clock:
 
-![](images/not-playing-sm.jpg)
+<kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/not-playing.jpg"></kbd>
 
 ## Privacy
 It runs entirely within your browser and there is no server other than to provide your browser with the index.html file. No data is sent or stored anywhere except it saves the local IP address of your streamer within your browser's local storage.
