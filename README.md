@@ -19,7 +19,9 @@ It runs entirely within your browser and there is no server other than to provid
 ## Installation
 Copy `dist/index.html` to somewhere your browser can open it. The simplest is to put it on the device itself and open it in the browser with `file://<path-to-the-file>/index.html`
 
-If you want to have an icon for the tab in your browser you can copy those files from the dist folder to the same location you put the index.html file. This is optional and not used if you run it as a kiosk (see below).
+Alternatively you can download index.html: `wget https://jaymarnz.dev/bluview`
+
+If you want to have an icon for the tab in your browser you can copy the icon png files from the dist folder to the same location you put the index.html file. This is optional and isn't used if you run it as a kiosk (see below).
 
 Alternatively you can host it on any webserver you have on your local network (eg. RPi, Quadra, PC, Laptop, NUC, basically anything that can run a simple webserver). See below about why hosting remotely is troublesome.
 
