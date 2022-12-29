@@ -21,7 +21,7 @@ Copy `dist/index.html` to somewhere your browser can open it. The simplest is to
 
 If you want to have an icon for the tab in your browser you can copy those files from the dist folder to the same location you put the index.html file. This is optional and not used if you run it as a kiosk (see below).
 
-Alternatively you can host it on any webserver you have on your local network (eg. RPI, Laptop, NUC, anything that can run a simple webserver). See below about why hosting remotely is troublesome.
+Alternatively you can host it on any webserver you have on your local network (eg. RPi, Quadra, PC, Laptop, NUC, basically anything that can run a simple webserver). See below about why hosting remotely is troublesome.
 
 ## Configuration
 The first time you open the page it will show a configuration screen. All you need to do is enter the IP address of your player. You'll find it in the BluOS app under Help -> Diagnostics. You usually only need to do this once but if for some reason the IP address changes you can get back to the configuration screen by touching or clicking anywhere on the clock screen when nothing is playing.
@@ -32,7 +32,7 @@ In some browsers you can make the page full-screen (eliminates the web address a
 I wasn't able to do this on my old Android tablet running Chrome so I use a free app called Fully Kiosk. There's probably others but this one works great for running BluView:<br>https://play.google.com/store/apps/details?id=com.fullykiosk.singleapp&hl=en_US&gl=US
 
 ## Kiosk Mode (iOS)
-***[FIND OUT HOW TO DO THIS]***
+iOS has a kiosk mode built-in. It's called Guided Access and is enabled in Settings -> Accessibility>Guided Access
 
 ## TL;DR - Why don't I just host this for you?
 I thought I could just create a public website and give you the link. You'll find it at https://jaymarnz.dev/bluview but it might not work without making a few changes to your browser. That's because in newer browser versions remote sites can't access local resources (your player) by default. If your device is running one of these newer browsers then it will always fail to connect to the player and you'll get an error on the configuration screen.
