@@ -164,6 +164,7 @@ p {
   display: inline;
   font-size: 1em;
   font-weight: normal;
+  margin-right: 0.25em
 }
 
 #errorMessage {
