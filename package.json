@@ -6,7 +6,7 @@
   "license": "ISC",
   "scripts": {
     "build": "node build.js",
-    "clean": "del /F/Q .\\dist"
+    "clean": "rm -rf ./dist"
   },
   "devDependencies": {
     "copy": "^0.3.2",
