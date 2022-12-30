@@ -12,6 +12,7 @@
     "copy": "^0.3.2",
     "fs-extra": "^11.1.0",
     "html-minifier": "^4.0.0",
-    "inline-scripts": "^1.7.4"
+    "inline-scripts": "github:jaymarnz/inline-scripts",
+    "npm": "^9.2.0"
   }
 }

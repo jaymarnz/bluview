@@ -1,13 +1,12 @@
 /*
-**  1. Inline external scripts
-**  2. Inline stylesheets
-**  3. Minify index.html
-**  4. Copy .png and .ico images
+**  1. Inline external scripts, style sheets, and images
+**  2. Minify index.html
+**  3. Copy .png and .ico images
 */
 const fs = require('fs-extra')
-const path = require('path');
-const copy = require('copy')
+const {inlineScriptTags, inlineStylesheets, inlineImages} = require('inline-scripts');
 const minify = require('html-minifier').minify;
+const copy = require('copy')
 
 const minifyOptions = {
   collapseWhitespace: true,
@@ -21,6 +20,7 @@ fs.ensureDirSync('./dist', { recursive: true })
 
 inlineScriptTags('./src/index.html')
 .then (htmlString => inlineStylesheets({ htmlPath: './src/index.html', htmlString }))
+.then (htmlString => inlineImages({ htmlPath: './src/index.html', htmlString }))
 .then (htmlString => fs.writeFile('./dist/index.html', minify(htmlString, minifyOptions)))
 .then (async () => await copyimages())
 
@@ -31,68 +31,4 @@ async function copyimages() {
       resolve()
     })
   })
-}
-
-// A shame the "inline-scripts" package for these requires a file name and you can't provide the html input as a string
-// This means to chain them you have to create a temp file. Messy. So, I've made them chainable by taking either
-// a fileName or an htmlString. Very small change.
-//
-// MIT License
-// Copyright (c) 2020 mahhov
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-async function inlineStylesheets(options) {
-	const linkTagRegex = /<link (?:.* )?rel="stylesheet"(?:.* )?href="([\w.\-\/]+)".*>|<link (?:.* )?href="([\w.\-\/]+)"(?:.* )?rel="stylesheet".*>/;
-	let htmlString, htmlPath = (typeof options === 'string') ? options : '';
-	if (typeof options === 'object') ({ htmlString, htmlPath } = options);
-	const html = htmlString || await fs.readFile(htmlPath, 'utf8');
-	let matches = html.match(new RegExp(linkTagRegex, 'g'));
-	if (!matches)
-		return html;
-	let stylesheetPromises = matches
-		.map(linkTag => {
-			let m = linkTag.match(linkTagRegex);
-			return m[1] || m[2];
-		})
-		.map(relPath => path.resolve(path.dirname(htmlPath), relPath))
-		.map(stylesheetPath => fs.readFile(stylesheetPath, 'utf8'));
-	let i = 0;
-	return Promise.all(stylesheetPromises).then(stylesheets =>
-		html.replace(new RegExp(linkTagRegex, 'g'), () =>
-			`<style>${stylesheets[i++]}</style>`));
-
-}
-
-async function inlineScriptTags(options) {
-	const scriptTagRegex = /<script (?:.* )?src="([\w.\-\/]+)".*><\/script>/;
-	let htmlString, htmlPath = (typeof options === 'string') ? options : '';
-	if (typeof options === 'object') ({ htmlString, htmlPath } = options);
-	const html = htmlString || await fs.readFile(htmlPath, 'utf8');
-	let matches = html.match(new RegExp(scriptTagRegex, 'g'));
-	if (!matches)
-		return html;
-	let scriptPromises = matches
-		.map(scriptTag => scriptTag.match(scriptTagRegex)[1])
-		.map(relScriptPath => path.resolve(path.dirname(htmlPath), relScriptPath))
-		.map(scriptPath => fs.readFile(scriptPath, 'utf8'));
-	let i = 0;
-	return Promise.all(scriptPromises).then(scripts =>
-		html.replace(new RegExp(scriptTagRegex, 'g'), () =>
-			`<script>${scripts[i++].replace(/<\/script>/g, '<\\/script>')}</script>`));
 }
