@@ -19,16 +19,10 @@ const minifyOptions = {
 
 fs.ensureDirSync('./dist', { recursive: true })
 
-inlineScriptTags({ fileName: './src/index.html' })
-.then (async htmlString => {
-  inlineStylesheets({ fileName: './src/index.html', htmlString })
-  .then (async htmlString => {
-    fs.writeFile('./dist/index.html', minify(htmlString, minifyOptions))
-    .then (async () => {
-      await copyimages()
-    })
-  })
-})
+inlineScriptTags('./src/index.html')
+.then (htmlString => inlineStylesheets({ htmlPath: './src/index.html', htmlString }))
+.then (htmlString => fs.writeFile('./dist/index.html', minify(htmlString, minifyOptions)))
+.then (async () => await copyimages())
 
 async function copyimages() {
   return new Promise((resolve, reject) => {
@@ -64,12 +58,10 @@ async function copyimages() {
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 async function inlineStylesheets(options) {
-  let fileName, htmlString;
-  if (typeof options === 'string') fileName = options;
-  if (typeof options === 'object') ({ fileName, htmlString } = options);
-	const html = htmlString || await fs.readFile(fileName, 'utf8');
-
 	const linkTagRegex = /<link (?:.* )?rel="stylesheet"(?:.* )?href="([\w.\-\/]+)".*>|<link (?:.* )?href="([\w.\-\/]+)"(?:.* )?rel="stylesheet".*>/;
+	let htmlString, htmlPath = (typeof options === 'string') ? options : '';
+	if (typeof options === 'object') ({ htmlString, htmlPath } = options);
+	const html = htmlString || await fs.readFile(htmlPath, 'utf8');
 	let matches = html.match(new RegExp(linkTagRegex, 'g'));
 	if (!matches)
 		return html;
@@ -78,27 +70,26 @@ async function inlineStylesheets(options) {
 			let m = linkTag.match(linkTagRegex);
 			return m[1] || m[2];
 		})
-		.map(relPath => path.resolve(path.dirname(fileName), relPath))
+		.map(relPath => path.resolve(path.dirname(htmlPath), relPath))
 		.map(stylesheetPath => fs.readFile(stylesheetPath, 'utf8'));
 	let i = 0;
 	return Promise.all(stylesheetPromises).then(stylesheets =>
 		html.replace(new RegExp(linkTagRegex, 'g'), () =>
 			`<style>${stylesheets[i++]}</style>`));
+
 }
 
 async function inlineScriptTags(options) {
-  let fileName, htmlString;
-  if (typeof options === 'string') fileName = options;
-  if (typeof options === 'object') ({ fileName, htmlString } = options);
-	const html = htmlString || await fs.readFile(fileName, 'utf8');
-
 	const scriptTagRegex = /<script (?:.* )?src="([\w.\-\/]+)".*><\/script>/;
+	let htmlString, htmlPath = (typeof options === 'string') ? options : '';
+	if (typeof options === 'object') ({ htmlString, htmlPath } = options);
+	const html = htmlString || await fs.readFile(htmlPath, 'utf8');
 	let matches = html.match(new RegExp(scriptTagRegex, 'g'));
 	if (!matches)
 		return html;
 	let scriptPromises = matches
 		.map(scriptTag => scriptTag.match(scriptTagRegex)[1])
-		.map(relScriptPath => path.resolve(path.dirname(fileName), relScriptPath))
+		.map(relScriptPath => path.resolve(path.dirname(htmlPath), relScriptPath))
 		.map(scriptPath => fs.readFile(scriptPath, 'utf8'));
 	let i = 0;
 	return Promise.all(scriptPromises).then(scripts =>
