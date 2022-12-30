@@ -19,12 +19,12 @@ It runs entirely within your browser and there is no server other than to provid
 ## Installation
 Copy `dist/index.html` to somewhere your browser can open it. The simplest is to put it on the device itself and open it in the browser with `file://<path-to-the-file>/index.html`
 
-Alternatively you can download index.html: `wget https://jaymarnz.dev/bluview`
+You can also download index.html with: `wget https://jaymarnz.dev/bluview`
 
 ### Local Hosting
-Alternatively you can host it on any webserver you have on your local network (eg. RPi, Quadra, PC, Laptop, NUC, basically anything that can run a simple webserver). See below about why hosting remotely is troublesome.
+If you already have a webserver on your local network you can host index.html and that's all you need to do. (eg. RPi, Quadra, PC, Laptop, NUC, NAS, basically anything that can run a simple webserver). See below about why hosting remotely is troublesome.
 
-If you want to have an icon for the tab in your browser you can copy the icon png files from the dist folder to the same location you put the index.html file. This is optional and isn't used if you run it as a kiosk (see below).
+If you want to have an icon within your browser you can copy the icon png files from the dist folder to the same location you put the index.html file. This is optional and isn't used if you run it as a kiosk (see below).
 
 ### Local File Installation on Android and iOS
 If you don't have a local webserver you can download it on Android and iOS but it's not obvious how to then open the local on-device index.html file in a browser. Particularly on iOS where both Safari and Chrome won't open a local file. Here's what I've found works:
