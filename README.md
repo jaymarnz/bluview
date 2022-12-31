@@ -13,6 +13,10 @@ When nothing is playing it is just a clock:
 
 <kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/not-playing.jpg"></kbd>
 
+Config screen displays started for the first time. You can also get back here by clicking anywhere on the full-screen clock display above:
+
+<kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/configuration.jpg"></kbd>
+
 ## Privacy
 It runs entirely within your browser and there is no server other than to provide your browser with the index.html file. No data is sent or stored anywhere except it saves the local IP address of your streamer within your browser's local storage.
 
