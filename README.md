@@ -13,10 +13,6 @@ When nothing is playing it is just a clock:
 
 <kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/not-playing.jpg"></kbd>
 
-Config screen when run for the first time. You can also get back here by clicking/touching anywhere on the clock display screen:
-
-<kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/configuration.jpg"></kbd>
-
 ## Privacy
 It runs entirely within your browser and there is no server other than to provide your browser with the index.html file. No data is sent or stored anywhere except it saves the local IP address of your streamer within your browser's local storage.
 
@@ -46,6 +42,8 @@ If you don't have a local webserver you can download it on Android and iOS but i
 
 ## Configuration
 The first time you open the page it will show a configuration screen. All you need to do is enter the IP address of your player. You'll find it in the BluOS app under Help -> Diagnostics. You usually only need to do this once but if for some reason the IP address changes you can get back to the configuration screen by touching or clicking anywhere on the clock screen when nothing is playing.
+
+<kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/configuration.jpg"></kbd>
 
 ## Kiosk Mode (Android)
 In some browsers you can make the page full-screen (eliminates the web address and other headers so it's just the web page). I recommend using it this way.
