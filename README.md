@@ -13,7 +13,7 @@ When nothing is playing it is just a clock:
 
 <kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/not-playing.jpg"></kbd>
 
-Config screen displays started for the first time. You can also get back here by clicking anywhere on the full-screen clock display above:
+Config screen when run for the first time. You can also get back here by clicking/touching anywhere on the clock display screen:
 
 <kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/configuration.jpg"></kbd>
 
