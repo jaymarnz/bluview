@@ -19,7 +19,11 @@ It runs entirely within your browser and there is no server other than to provid
 ## Installation
 Copy `dist/index.html` to somewhere your browser can open it. The simplest is to put it on the device itself and open it in the browser with `file://<path-to-the-file>/index.html`
 
-You can also download index.html with: `wget https://jaymarnz.dev/bluview`
+To download the file from GitHub: 
+1. https://raw.githubusercontent.com/jaymarnz/bluview/master/dist/index.html
+2. Right-click in the browser and save-as `index.html`
+
+You can also download with: `wget https://jaymarnz.dev/bluview/index.html`
 
 ### Local Hosting
 If you already have a webserver on your local network you can host index.html and that's all you need to do. (eg. RPi, Quadra, PC, Laptop, NUC, NAS, basically anything that can run a simple webserver). See below about why hosting remotely is troublesome.
