@@ -32,13 +32,13 @@ If you don't have a local webserver you can download it on Android and iOS but i
 #### Android
 1. Put index.html in Google Drive or on the phone itself
 2. Navigate to the index.html file either within Google Drive or using the Files app
-3. Click on the file's menu and choose Open with->Chrome
+3. Click on the file's menu and choose Open with -> Chrome
 
 #### iOS (tested on iPad)
 1. Install Microsoft Edge (it seems it might be the only mainstream browser on iOS that will open local html files)
 2. Put index.html in One Drive, Google Drive or download locally
 3. Use the files app to navigate to the file
-4. Click and hold on the index.html file and choose Share->Edge
+4. Click and hold on the index.html file and choose Share -> Edge
 
 ## Configuration
 The first time you open the page it will show a configuration screen. All you need to do is enter the IP address of your player. You'll find it in the BluOS app under Help -> Diagnostics. You usually only need to do this once but if for some reason the IP address changes you can get back to the configuration screen by touching or clicking anywhere on the clock screen when nothing is playing.
@@ -51,7 +51,7 @@ In some browsers you can make the page full-screen (eliminates the web address a
 I wasn't able to do this on my old Android tablet running Chrome so I use a free app called Fully Kiosk. There's probably others but this one works great for running BluView:<br>https://play.google.com/store/apps/details?id=com.fullykiosk.singleapp&hl=en_US&gl=US
 
 ## Kiosk Mode (iOS)
-iOS has a kiosk mode built-in. It's called Guided Access and is enabled in Settings -> Accessibility>Guided Access
+iOS has a kiosk mode built-in. It's called Guided Access and is enabled in Settings -> Accessibility -> Guided Access
 
 ## TL;DR - Why don't I just host this for you?
 I thought I could just create a public website and provide the link. I did and you'll find it at https://jaymarnz.dev/bluview but it might not work without making a few changes to settings in your browser. That's because in newer browser versions remote sites can't access local resources (your player) by default. If your device is running one of these newer browsers then it will fail to connect to the player and you'll get an error on the configuration screen.
