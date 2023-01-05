@@ -23,7 +23,7 @@ async function getConfig(options) {
     // if we succeeded, put the playerIP into the config object
     if (playerIP) {
       config.playerIP = playerIP
-      localStorage.setItem('config', JSON.stringify(config))
+      localStorage.setItem('config', JSON.stringify({ playerIP: config.playerIP })) // we only need/should store the playerIP
 
       // remove prior IP last so if they refresh browser again it is still there until they've successfully changed it
       if (priorIP) {
@@ -58,7 +58,8 @@ async function getPlayerIP() {
       const syncStatus = await playerRequest('SyncStatus', {
         ...config,
         ...{ playerIP: userIP,
-             fetchTimeout: 10000 // only use this for short polling requests
+             fetchTimeout: 10000,
+             errorMessage: 'Error connecting to the player<br>Check the IP address is correct and reachable'
            }
       })
 

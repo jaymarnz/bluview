@@ -16,8 +16,8 @@ function playerRequest(command, options) {
     })
     .fail((xhr, status, error) => {
       return reject(new Error(
-        `Error connecting to the player ${error ? '('+error+')' : ''}` +
-        '<br>Check the IP address is correct and reachable'
+        options.errorMessage || (error === 'timeout' ? 'Player request timed out'
+          : `Error conmmunicating with the player ${error ? '('+error+')' : ''}<br>Check the IP address is correct and reachable`)
       ))
     })
   })

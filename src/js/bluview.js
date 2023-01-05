@@ -50,7 +50,12 @@ async function updatePlayer() {
   let query = 'Status'
   if (canLongPoll()) query = query + `?timeout=${config.pollTimeout}&etag=${etag}`
   
-  let status = await playerRequest(query, config)
+  let status = await playerRequest(query, {
+    // ensure that all requests have a timeout. if no fetchTimeout is supplied then use the pollTimeout+1s or 30s if not long polling
+    ...{ fetchTimeout: (canLongPoll() ? config.pollTimeout*1000 + 1000  : 30000)}, 
+    ...config
+  })
+
   status = status.status || {}
   etag = status._etag
   if (config.logStatus) console.log(status)
