@@ -9,12 +9,10 @@ const defaultConfig = {
 async function getConfig(options) {
   const config = { ...defaultConfig, ...(options || {}), ...(JSON.parse(localStorage.getItem('config') || '{}')) }
 
-  // if we have a prior IP, use that as the current value so they don't have to do anything if its still correct
+  // if we have a prior IP, use that as the initial value so they don't have to do anything if its still correct
   // but if no prior IP, then leave the ip-address field untouched
-  const priorIP = localStorage.getItem('priorIP')
-
-  if (priorIP) {
-    $('#ip_address').val(priorIP)
+  if (config.priorIP) {
+    $('#ip_address').val(config.priorIP)
   }
 
   while (!config.playerIP) {
@@ -24,11 +22,6 @@ async function getConfig(options) {
     if (playerIP) {
       config.playerIP = playerIP
       localStorage.setItem('config', JSON.stringify({ playerIP: config.playerIP })) // we only need/should store the playerIP
-
-      // remove prior IP last so if they refresh browser again it is still there until they've successfully changed it
-      if (priorIP) {
-        localStorage.removeItem('priorIP')
-      }
     }
   }
   

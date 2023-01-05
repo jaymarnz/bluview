@@ -8,8 +8,7 @@ $(async function() {
   // clicking on the screen in clock-mode will force back into config mode by reloading the page
   // I reload the page so all outstanding requests are cleaned up and we just start from scratch
   $('#notPlaying').click(() => {
-    window.localStorage.removeItem('config')
-    window.localStorage.setItem('priorIP', config.playerIP)
+    localStorage.setItem('config', JSON.stringify({ priorIP: config.playerIP }))
     location.reload()
   });
 
