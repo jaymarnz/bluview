@@ -24,7 +24,7 @@ async function run() {
   $('#run').show()
 
   updateTime()
-  setInterval(updateTime, 1000)
+  setInterval(updateTime, 250)
 
   while (true) {
     try {
