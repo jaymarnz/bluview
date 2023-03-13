@@ -88,7 +88,7 @@ p {
 .playingContainer {
   display: flex;
   height: 400px;
-  min-width: 0;
+  width: 100%;
 }
 
 .left {
@@ -127,6 +127,20 @@ p {
   padding-bottom: 0.5em;
 }
 
+.notmuted {
+  background-image: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M320,320c9.74-19.38,16-40.84,16-64,0-23.48-6-44.42-16-64" stroke="%23e3e3e3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><path d="M368,368c19.48-33.92,32-64.06,32-112s-12-77.74-32-112" stroke="%23e3e3e3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><path d="M416,416c30-46,48-91.43,48-160S446,143,416,96" stroke="%23e3e3e3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><polygon fill="%23e3e3e3" points="125.65 176.1 32 176.1 32 335.9 125.65 335.9 256 440 256 72 125.65 176.1"/></svg>');
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.muted {
+  background-image: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><line x1="416" y1="432" x2="64" y2="80" stroke="%23e3e3e3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><polygon fill="%23e3e3e3" points="256 72 182.4 130.78 256 204.37 256 72"/><polygon fill="%23e3e3e3" points="32 176.1 32 335.9 125.65 335.9 256 440 256 339.63 92.47 176.1 32 176.1"/></svg>');
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 #image {
   width: 400px;
   height: 400px;
@@ -151,13 +165,19 @@ p {
 }
 
 #timeOfDay {
-  padding-top: 25px;
+  padding-top: 18px;
+}
+
+#streamInfo {
+  display: flex;
+  align-items: center;
 }
 
 #serviceIcon {
-  display:block;
+  display:inline-block;
   width: 32px;
   height: 32px;
+  margin-right: 16px;
 }
 
 #serviceName, #quality, #streamFormat {
@@ -165,6 +185,26 @@ p {
   font-size: 1em;
   font-weight: normal;
   margin-right: 0.25em
+}
+
+#volume {
+  height: 42px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+#volume_box {
+  margin-left: 50px;
+  height: 80%;
+  width: 100%;
+  border: 1px solid #e3e3e3;
+}
+
+#volume_level {
+  height: 100%;
+  width: 0;
+  background-color: #e3e3e3;
 }
 
 #errorMessage {

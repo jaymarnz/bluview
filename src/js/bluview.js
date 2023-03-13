@@ -71,6 +71,8 @@ async function updatePlayer() {
     $('#title2').html(status.title2 || '') // artist
     $('#title3').html(status.title3 || '') // album
     
+    $('#timeOfDay').css('fontSize', (status.title1 && (status.title2 || status.title3)) ? '6em' : '10em')
+
     setImageSrc($('#serviceIcon'), status.serviceIcon, config)
     // $('#serviceName').html(status.serviceName || '')
     
@@ -80,13 +82,11 @@ async function updatePlayer() {
       status.quality = `${status.quality/1000} Kbps`
     }
 
-    if (status.quality === 'MQAAUTHORED')
-    status.quality = 'MQA (AUTH)'
-
-    $('#quality').html(status.quality)
+    $('#quality').html((status.quality === 'MQAAUTHORED') ? 'MQA (AUTH)' : status.quality)
     $('#streamFormat').html(status.streamFormat || '')
 
-    $('#timeOfDay').css('fontSize', (status.title1 && (status.title2 || status.title3)) ? '6em' : '10em')
+    $('#volume').attr('class', (status.mute === "1") ? 'muted' : 'notmuted')
+    $('#volume_level').width(status.volume + '%')
   }
 }
 
