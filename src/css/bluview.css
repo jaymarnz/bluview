@@ -204,6 +204,13 @@ p {
 #volume_level {
   height: 100%;
   width: 0;
+}
+
+.muted #volume_level {
+  background-color: #c3c3c3;
+}
+
+.notmuted #volume_level {
   background-color: #e3e3e3;
 }
 

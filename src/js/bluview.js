@@ -3,6 +3,8 @@ let config = {
   logStatus: false
 }
 
+let state = {} // latest player status
+
 // entry point
 $(async function() {
   // clicking on the screen in clock-mode will force back into config mode by reloading the page
@@ -25,6 +27,8 @@ async function run() {
 
   updateTime()
   setInterval(updateTime, 250)
+
+  enableVolumeManagement({...config, ...{ dialServer: '192.168.68.69:3000' } }) // TBS *********** put this into config object
 
   while (true) {
     try {
@@ -49,44 +53,59 @@ async function updatePlayer() {
   let query = 'Status'
   if (canLongPoll()) query = query + `?timeout=${config.pollTimeout}&etag=${etag}`
   
-  let status = await playerRequest(query, {
+  state = await playerRequest(query, {
     // ensure that all requests have a timeout. if no fetchTimeout is supplied then use the pollTimeout+1s or 30s if not long polling
     ...{ fetchTimeout: (canLongPoll() ? config.pollTimeout*1000 + 1000  : 30000)}, 
     ...config
   })
 
-  status = status.status || {}
-  etag = status._etag
-  if (config.logStatus) console.log(status)
+  state = state.status || {}
+  etag = state._etag
+  updateDisplay()
+}
 
-  if (status.state !== 'play' && status.state !== 'stream') {
+function isPlaying() {
+  return (state.state === 'play' || state.state === 'stream')
+}
+
+function isMute() { // must return 0 or 1 since it is used in an arithmetic expression to toggle
+  let mute = parseInt(state.mute)
+  if (mute < 0 || mute > 1) throw new Error(`invalid mute value: ${mute}`)
+  return mute
+}
+
+function updateDisplay() {
+  if (config.logStatus) console.log(state)
+
+  if (!isPlaying()) {
     $('#playing').hide()
     $('#notPlaying').show()
   } else {
     $('#playing').show()
     $('#notPlaying').hide()
 
-    setImageSrc($('#image'), status.image, config)
-    $('#title1').html(status.title1 || '') // song title or device (eg. TV)
-    $('#title2').html(status.title2 || '') // artist
-    $('#title3').html(status.title3 || '') // album
+    setImageSrc($('#image'), state.image, config)
+    $('#title1').html(state.title1 || '') // song title or device (eg. TV)
+    $('#title2').html(state.title2 || '') // artist
+    $('#title3').html(state.title3 || '') // album
     
-    $('#timeOfDay').css('fontSize', (status.title1 && (status.title2 || status.title3)) ? '6em' : '10em')
+    $('#timeOfDay').css('fontSize', (state.title1 && (state.title2 || state.title3)) ? '6em' : '10em')
 
-    setImageSrc($('#serviceIcon'), status.serviceIcon, config)
-    // $('#serviceName').html(status.serviceName || '')
+    setImageSrc($('#serviceIcon'), state.serviceIcon, config)
+    // $('#serviceName').html(state.serviceName || '')
     
-    if (isNaN(status.quality)) {
-      status.quality = (status.quality || '').toString().toUpperCase()
+    let quality
+    if (isNaN(state.quality)) {
+      quality = (state.quality || '').toString().toUpperCase()
     } else {
-      status.quality = `${status.quality/1000} Kbps`
+      quality = `${state.quality/1000} Kbps`
     }
 
-    $('#quality').html((status.quality === 'MQAAUTHORED') ? 'MQA (AUTH)' : status.quality)
-    $('#streamFormat').html(status.streamFormat || '')
+    $('#quality').html((quality === 'MQAAUTHORED') ? 'MQA (AUTH)' : quality)
+    $('#streamFormat').html(state.streamFormat || '')
 
-    $('#volume').attr('class', (status.mute === "1") ? 'muted' : 'notmuted')
-    $('#volume_level').width(status.volume + '%')
+    $('#volume').attr('class', (state.mute === '1') ? 'muted' : 'notmuted')
+    $('#volume_level').width(((state.mute === '1') ? state.muteVolume : state.volume) + '%')
   }
 }
 
