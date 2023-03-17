@@ -1,4 +1,4 @@
-let config = { 
+let config = {
   disableLongPoll: false,
   logStatus: false
 }
@@ -6,7 +6,7 @@ let config = {
 let state = {} // latest player status
 
 // entry point
-$(async function() {
+$(async function () {
   // clicking on the screen in clock-mode will force back into config mode by reloading the page
   // I reload the page so all outstanding requests are cleaned up and we just start from scratch
   $('#notPlaying').click(() => {
@@ -28,7 +28,7 @@ async function run() {
   updateTime()
   setInterval(updateTime, 250)
 
-  enableVolumeManagement({...config, ...{ dialServer: '192.168.68.69:3000' } }) // TBS *********** put this into config object
+  enableVolumeManagement({ ...config, ...{ dialServer: '192.168.68.69:3000' } }) // TBS *********** put this into config object
 
   while (true) {
     try {
@@ -43,7 +43,7 @@ async function run() {
 }
 
 // BluOS long polling Etag and helper function
-let etag 
+let etag
 function canLongPoll() {
   return etag && config.pollTimeout && !config.disableLongPoll
 }
@@ -52,10 +52,10 @@ function canLongPoll() {
 async function updatePlayer() {
   let query = 'Status'
   if (canLongPoll()) query = query + `?timeout=${config.pollTimeout}&etag=${etag}`
-  
+
   state = await playerRequest(query, {
     // ensure that all requests have a timeout. if no fetchTimeout is supplied then use the pollTimeout+1s or 30s if not long polling
-    ...{ fetchTimeout: (canLongPoll() ? config.pollTimeout*1000 + 1000  : 30000)}, 
+    ...{ fetchTimeout: (canLongPoll() ? config.pollTimeout * 1000 + 1000 : 30000) },
     ...config
   })
 
@@ -88,17 +88,17 @@ function updateDisplay() {
     $('#title1').html(state.title1 || '') // song title or device (eg. TV)
     $('#title2').html(state.title2 || '') // artist
     $('#title3').html(state.title3 || '') // album
-    
+
     $('#timeOfDay').css('fontSize', (state.title1 && (state.title2 || state.title3)) ? '6em' : '10em')
 
     setImageSrc($('#serviceIcon'), state.serviceIcon, config)
     // $('#serviceName').html(state.serviceName || '')
-    
+
     let quality
     if (isNaN(state.quality)) {
       quality = (state.quality || '').toString().toUpperCase()
     } else {
-      quality = `${state.quality/1000} Kbps`
+      quality = `${state.quality / 1000} Kbps`
     }
 
     $('#quality').html((quality === 'MQAAUTHORED') ? 'MQA (AUTH)' : quality)
@@ -113,11 +113,11 @@ function updateDisplay() {
 function updateTime() {
   const now = new Date()
 
-  $('.timeOfDay').each(function() {
+  $('.timeOfDay').each(function () {
     $(this).html(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`)
   })
 
-  $('.today').each(function() {
+  $('.today').each(function () {
     $(this).html(formatDate(now))
   })
 }
@@ -127,7 +127,7 @@ function updateTime() {
 function formatDate(now) {
   const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  
+
   const [day, month, date, year] = [
     now.getDay(),
     now.getMonth(),

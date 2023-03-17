@@ -6,20 +6,20 @@ function playerRequest(command, options) {
     const url = _bluosURL(command, options)
 
     $.ajax({
-      url, 
+      url,
       type: 'get',
       dataType: 'xml',
       timeout: options.fetchTimeout
     })
-    .done((data, status, xhr) => {
-      return resolve(x2js.xml2json(xhr.responseXML))
-    })
-    .fail((xhr, status, error) => {
-      return reject(new Error(
-        options.errorMessage || (error === 'timeout' ? 'Player request timed out'
-          : `Error conmmunicating with the player ${error ? '('+error+')' : ''}<br>Check the IP address is correct and reachable`)
-      ))
-    })
+      .done((data, status, xhr) => {
+        return resolve(x2js.xml2json(xhr.responseXML))
+      })
+      .fail((xhr, status, error) => {
+        return reject(new Error(
+          options.errorMessage || (error === 'timeout' ? 'Player request timed out'
+            : `Error conmmunicating with the player ${error ? '(' + error + ')' : ''}<br>Check the IP address is correct and reachable`)
+        ))
+      })
   })
 }
 
@@ -69,19 +69,19 @@ function enableButtonIfValidIP(field, button) {
     const this1 = $(field)
     if (!pattern.test(this1.val())) {
       $(button).prop("disabled", true)
-        while (this1.val().indexOf("..") !== -1) {
-            this1.val(this1.val().replace('..', '.'))
-        }
-        x = 46
+      while (this1.val().indexOf("..") !== -1) {
+        this1.val(this1.val().replace('..', '.'))
+      }
+      x = 46
     } else {
-        x = 0
-        const lastChar = this1.val().substr(this1.val().length - 1)
-        if (lastChar == '.') {
-            this1.val(this1.val().slice(0, -1))
-        }
-        if (this1.val().split('.').length == 4) {
-          $(button).prop("disabled", false)
-        }
+      x = 0
+      const lastChar = this1.val().substr(this1.val().length - 1)
+      if (lastChar == '.') {
+        this1.val(this1.val().slice(0, -1))
+      }
+      if (this1.val().split('.').length == 4) {
+        $(button).prop("disabled", false)
+      }
     }
   })
 }

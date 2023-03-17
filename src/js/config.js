@@ -17,14 +17,14 @@ async function getConfig(options) {
 
   while (!config.playerIP) {
     const playerIP = await getPlayerIP()
-    
+
     // if we succeeded, put the playerIP into the config object
     if (playerIP) {
       config.playerIP = playerIP
       localStorage.setItem('config', JSON.stringify({ playerIP: config.playerIP })) // we only need/should store the playerIP
     }
   }
-  
+
   return config
 }
 
@@ -33,27 +33,28 @@ async function getPlayerIP() {
   let playerIP
 
   enableButtonIfValidIP('#ip_address', '#btnConfig')
-  
+
   while (!playerIP) {
     $('#config').show()
-    
+
     try {
       $('#btnConfig').show()
       $('#spinner').hide()
-      
+
       const userIP = await configButtonClick()
-      
+
       $('#errorMessage').hide()
       $('#btnConfig').hide()
       $('#spinner').show()
-      
+
       // test the user-supplied IP by requesting a SyncStatus (supply a fetch timeout so we don't hang minutes!)
       const syncStatus = await playerRequest('SyncStatus', {
         ...config,
-        ...{ playerIP: userIP,
-             fetchTimeout: 10000,
-             errorMessage: 'Error connecting to the player<br>Check the IP address is correct and reachable'
-           }
+        ...{
+          playerIP: userIP,
+          fetchTimeout: 10000,
+          errorMessage: 'Error connecting to the player<br>Check the IP address is correct and reachable'
+        }
       })
 
       // if the syncStatus is valid (I just check that the player is initialized) then we've got a valid player IP
@@ -64,7 +65,7 @@ async function getPlayerIP() {
 
         playerIP = userIP;
       }
-    } catch (error) { 
+    } catch (error) {
       $('#errorMessageText').html(error.message || error.toLocaleString())
       $('#errorMessage').show()
     }

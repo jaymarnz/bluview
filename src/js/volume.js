@@ -5,8 +5,8 @@
 //    { degrees: +/- n }
 //    { status: 'status message' }
 //
-const connectRetryTime = 5*1000 // period to check for a connection and try to establish if necessary
-const keepAliveTime = 30*1000   // just to make sure the server hasn't gone away
+const connectRetryTime = 5 * 1000 // period to check for a connection and try to establish if necessary
+const keepAliveTime = 30 * 1000   // just to make sure the server hasn't gone away
 const longPressTime = 500       // this is the default long press time on Android
 
 let webSocket
@@ -37,7 +37,7 @@ function connect(config) {
 
     webSocket.onopen = () => {
       if (config.logStatus) console.log('connected to dialServer')
-      keepAliveTimer = setInterval(()=>webSocket.send(''), keepAliveTime)
+      keepAliveTimer = setInterval(() => webSocket.send(''), keepAliveTime)
     }
 
     webSocket.onclose = () => {
@@ -99,19 +99,19 @@ function longPress(config) {
 
 function toggleMute(config) {
   if (config.logStatus) console.log('toggleMute')
-  setMute(config, 1 - isMute() )
+  setMute(config, 1 - isMute())
 }
 
 function setMute(config, value) {
   if (config.logStatus) console.log(`setMute: ${value}`)
   playerRequest(`Volume?mute=${value}`, config)
-  .catch((error) => console.error(error))
+    .catch((error) => console.error(error))
 }
 
 function pausePlay(config, pause) { // pass true to pause player and false to resume playing
   if (config.logStatus) console.log(`pausePlay: ${pause}`)
   playerRequest(pause ? 'Pause' : 'Play', config)
-  .catch((error) => console.error(error))
+    .catch((error) => console.error(error))
 }
 
 function adjustVolume(data, config) {
@@ -123,7 +123,7 @@ function adjustVolume(data, config) {
   currentVolume = currentVolume || (state.mute === "1" ? state.muteVolume : state.volume)
 
   // convert degrees to volume adjustment from +/- 0-100
-  let volume = Math.round(Math.abs(data.degrees)/fullscale * 100) * Math.sign(data.degrees)
+  let volume = Math.round(Math.abs(data.degrees) / fullscale * 100) * Math.sign(data.degrees)
 
   // ensure we always make an adjustment of at least one so slow small rotations work
   if (volume === 0) volume = 1 * Math.sign(data.degrees)
@@ -131,7 +131,7 @@ function adjustVolume(data, config) {
   // add adjustment to existing volume and ensure result is between 0-100
   if (config.logStatus) console.log(`adjustVolume: { degrees: ${data.degrees}, volume: ${currentVolume}, adjustment: ${volume}`)
   const newVolume = Math.max(Math.min(parseInt(currentVolume) + volume, 100), 0)
-  
+
   if (newVolume >= 0 && newVolume <= 100) {
     currentVolume = newVolume
 
@@ -141,11 +141,11 @@ function adjustVolume(data, config) {
 
     // send volume level request to player
     playerRequest(`Volume?level=${newVolume}`, config)
-    .then((result) => {
-      // capture actual result
-      state.volume = result.__text 
-      updateDisplay()
-    })
-    .catch((error) => console.error(error))
+      .then((result) => {
+        // capture actual result
+        state.volume = result.__text
+        updateDisplay()
+      })
+      .catch((error) => console.error(error))
   }
 }
