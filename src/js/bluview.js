@@ -10,7 +10,10 @@ $(async function () {
   // clicking on the screen in clock-mode will force back into config mode by reloading the page
   // I reload the page so all outstanding requests are cleaned up and we just start from scratch
   $('#notPlaying').click(() => {
-    localStorage.setItem('config', JSON.stringify({ priorIP: config.playerIP }))
+    localStorage.setItem(configlocalStorage, JSON.stringify({
+      priorIP: config.playerIP,
+      priorDialServerIP: config.dialServerIP
+    }))
     location.reload()
   });
 
@@ -28,7 +31,8 @@ async function run() {
   updateTime()
   setInterval(updateTime, 250)
 
-  enableVolumeManagement({ ...config, ...{ dialServer: '192.168.68.69:3000' } }) // TBS *********** put this into config object
+  if (config.dialServerIP)
+    enableVolumeManagement(config)
 
   while (true) {
     try {

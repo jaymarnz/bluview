@@ -24,8 +24,13 @@ async function enableVolumeManagement(config) {
 }
 
 function connect(config) {
-  if (config.dialServer) {
-    const url = 'ws://' + config.dialServer
+  if (config.dialServerIP) {
+    let url = 'ws://' + config.dialServerIP
+
+    // apply the default if a port is not specified
+    if (!/^.+:([0-9]+)$/.test(url))
+      url += ':' + config.dialserverDefaultPort
+
     if (config.logStatus) console.log('connecting to dialServer at', url)
     webSocket = new WebSocket(url)
 

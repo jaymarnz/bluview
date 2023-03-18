@@ -51,14 +51,23 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+const IpPatternStr = '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+const IpPattern = new RegExp('^' + IpPatternStr + '$')
+const IpPortPattern = new RegExp('^' + IpPatternStr + '(:[0-9]+)?$')
+
+function isValidIpPort(str) {
+  const match = str.match(IpPortPattern)
+  if (!match) return false
+  return (!match[6] || (match[6] >= 1 && match[6] <= 65535))
+}
+
 // adapted from: https://jsfiddle.net/cse_tushar/aPM5X/3
 // pass a jquery selector for the ip address text field and the button to be enabled/disabled
 function enableButtonIfValidIP(field, button) {
-  const pattern = /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
   let x = 46
 
   // start with the button disabled if the IP isn't currently valid
-  $(button).prop("disabled", !pattern.test($(field).val()))
+  $(button).prop("disabled", !IpPattern.test($(field).val()))
 
   $(field).keypress(e => {
     if (e.which != 8 && e.which != 0 && e.which != x && (e.which < 48 || e.which > 57)) {
@@ -67,7 +76,7 @@ function enableButtonIfValidIP(field, button) {
     }
   }).keyup(() => {
     const this1 = $(field)
-    if (!pattern.test(this1.val())) {
+    if (!IpPattern.test(this1.val())) {
       $(button).prop("disabled", true)
       while (this1.val().indexOf("..") !== -1) {
         this1.val(this1.val().replace('..', '.'))

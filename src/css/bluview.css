@@ -4,8 +4,8 @@
   font-family: Roboto, Verdana, Arial, Helvetica, sans-serif;
 }
 
-body { 
-  background-color: black; 
+body {
+  background-color: black;
   color: #e3e3e3;
   position: absolute;
   font-size: 125%;
@@ -33,6 +33,7 @@ input[type="button"] {
   background-color: chocolate;
   color: #e3e3e3;
 }
+
 input[type="button"]:disabled {
   background-color: #7e7e7e;
   opacity: 25%;
@@ -174,13 +175,15 @@ p {
 }
 
 #serviceIcon {
-  display:inline-block;
+  display: inline-block;
   width: 32px;
   height: 32px;
   margin-right: 16px;
 }
 
-#serviceName, #quality, #streamFormat {
+#serviceName,
+#quality,
+#streamFormat {
   display: inline;
   font-size: 1em;
   font-weight: normal;
@@ -212,6 +215,12 @@ p {
 
 .notmuted #volume_level {
   background-color: #e3e3e3;
+}
+
+#configForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #errorMessage {

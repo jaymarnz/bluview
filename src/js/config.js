@@ -1,5 +1,9 @@
+const configlocalStorage = 'bluview-config'
+
 const defaultConfig = {
   playerIP: undefined,
+  dialServerIP: undefined,
+  dialserverDefaultPort: 3000,
   pollTimeout: 100 // BluOS recommended long polling timeout (secs)
 }
 
@@ -7,7 +11,7 @@ const defaultConfig = {
 // pass a set of overrides for the default configuration which are again
 // overridden by localStorage if it exists there
 async function getConfig(options) {
-  const config = { ...defaultConfig, ...(options || {}), ...(JSON.parse(localStorage.getItem('config') || '{}')) }
+  const config = { ...defaultConfig, ...(options || {}), ...(JSON.parse(localStorage.getItem(configlocalStorage) || '{}')) }
 
   // if we have a prior IP, use that as the initial value so they don't have to do anything if its still correct
   // but if no prior IP, then leave the ip-address field untouched
@@ -15,13 +19,18 @@ async function getConfig(options) {
     $('#ip_address').val(config.priorIP)
   }
 
-  while (!config.playerIP) {
-    const playerIP = await getPlayerIP()
+  if (config.priorDialServerIP) {
+    $('#ds_address').val(config.priorDialServerIP)
+  }
 
-    // if we succeeded, put the playerIP into the config object
+  while (!config.playerIP) {
+    const { playerIP, dialServerIP } = await getPlayerIP(config)
+
+    // if we succeeded, put the IP's into the config object
     if (playerIP) {
       config.playerIP = playerIP
-      localStorage.setItem('config', JSON.stringify({ playerIP: config.playerIP })) // we only need/should store the playerIP
+      config.dialServerIP = dialServerIP
+      localStorage.setItem(configlocalStorage, JSON.stringify({ playerIP, dialServerIP })) // we only need to store the IP addresses
     }
   }
 
@@ -29,8 +38,8 @@ async function getConfig(options) {
 }
 
 // return a valid Player IP address entered by the user and confirmed to work
-async function getPlayerIP() {
-  let playerIP
+async function getPlayerIP(config) {
+  let playerIP, dialServerIP
 
   enableButtonIfValidIP('#ip_address', '#btnConfig')
 
@@ -41,17 +50,23 @@ async function getPlayerIP() {
       $('#btnConfig').show()
       $('#spinner').hide()
 
-      const userIP = await configButtonClick()
+      const userSettings = await configButtonClick()
 
       $('#errorMessage').hide()
       $('#btnConfig').hide()
       $('#spinner').show()
 
+      // verify the ds_address is either empty or valid
+      if (!userSettings.ds_address || isValidIpPort(userSettings.ds_address)) {
+        dialServerIP = (userSettings.ds_address || '')
+      } else
+        throw new Error("Invalid DialServer IP Address. Leave blank if you don't have a DialServer")
+
       // test the user-supplied IP by requesting a SyncStatus (supply a fetch timeout so we don't hang minutes!)
       const syncStatus = await playerRequest('SyncStatus', {
         ...config,
         ...{
-          playerIP: userIP,
+          playerIP: userSettings.ip_address,
           fetchTimeout: 10000,
           errorMessage: 'Error connecting to the player<br>Check the IP address is correct and reachable'
         }
@@ -63,7 +78,7 @@ async function getPlayerIP() {
           throw new Error('The player needs to be setup with the BluOS Controller app')
         }
 
-        playerIP = userIP;
+        playerIP = userSettings.ip_address;
       }
     } catch (error) {
       $('#errorMessageText').html(error.message || error.toLocaleString())
@@ -71,15 +86,18 @@ async function getPlayerIP() {
     }
 
     $('#config').hide()
-    return playerIP
+    return { playerIP, dialServerIP }
   }
 }
 
-// return a promise for a button click with the value of the IP address the user entered
+// return a promise for a button click with the value of the IP address and DialServer the user entered
 async function configButtonClick() {
   return new Promise((resolve, reject) => {
     $('#btnConfig').click(() => {
-      resolve($('#ip_address').val())
+      resolve({
+        ip_address: $('#ip_address').val(),
+        ds_address: $('#ds_address').val()
+      })
     })
   })
 }

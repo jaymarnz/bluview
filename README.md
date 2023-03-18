@@ -9,12 +9,25 @@ It shows the current title, artist, album and cover art along with the quality a
 
 <kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/playing.jpg"></kbd>
 
-When nothing is playing it is just a clock:
+When nothing is playing it's a clock:
 
 <kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/not-playing.jpg"></kbd>
 
+## Using a Microsoft Surface Dial for Wireless Volume Control
+By integrating with my DialServer project you can use a Surface Dial as a wireless volume control for your BluOS device. This requires you to run DialServer either on its own or on the same box you are using to serve up BluView. I'm currently doing this using a Raspberry Pi and an old Android tablet running BluView for the display. They are not connected other than via WiFi.
+
+To make this work, follow the install instructions at https://github.com/jaymarnz/dialserver and then configure BluView with the IP address of your DialServer. That's it!
+
+Functions support by the Surface Dial integration are:
+<table>
+<tr><td>Click (short press and release)</td><td>Mute or unmute. If paused it will unmute and resume playing</td>
+<tr><td>Long press (hold until action occurs)</td><td>Pause or resume playing</td>
+<tr><td>Rotate</td><td>Increase or decrease volume</td>
+
+</table>
+
 ## Privacy
-It runs entirely within your browser and there is no server other than to provide your browser with the index.html file. No data is sent or stored anywhere except it saves the local IP address of your streamer within your browser's local storage.
+It runs entirely within your browser and there is no data sent or stored anywhere else. It saves its configuration data in your browser's local storage. Configuration data is the local IP address of your streamer and the optional wireless volume control IP address if you use that feature.
 
 ## Installation
 Copy `dist/index.html` to somewhere your browser can open it. The simplest is to put it on the device itself and open it in the browser with `file://<path-to-the-file>/index.html`
@@ -45,7 +58,7 @@ If you don't have a local webserver you can download it on Android and iOS but i
 4. Click and hold on the index.html file and choose Share -> Edge
 
 ## Configuration
-The first time you open the page it will show a configuration screen. All you need to do is enter the IP address of your player. You'll find it in the BluOS app under Help -> Diagnostics. You usually only need to do this once but if for some reason the IP address changes you can get back to the configuration screen by touching or clicking anywhere on the clock screen when nothing is playing.
+The first time you open the page it will show a configuration screen. All you need to do is enter the IP address of your player. You'll find it in the BluOS app under Help -> Diagnostics. You usually only need to do this once but if for some reason the IP address changes you can get back to the configuration screen by touching or clicking anywhere on the clock screen when nothing is playing. This is also where you can enter the IP address and port of an optional wireless Surface Dial Server (https://github.com/jaymarnz/dialserver)
 
 <kbd><img src="https://raw.githubusercontent.com/jaymarnz/bluview/master/images/configuration.jpg"></kbd>
 
