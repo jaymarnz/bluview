@@ -7,12 +7,14 @@
 //
 const connectRetryTime = 5 * 1000 // period to check for a connection and try to establish if necessary
 const keepAliveTime = 30 * 1000   // just to make sure the server hasn't gone away
-const longPressTime = 500       // this is the default long press time on Android
+const longPressTime = 500         // this is the default long press time on Android
+const volumeCacheTime = 1000      // to make the U/I smooth I cache the current volume but only for this time period
 
 let webSocket
 let keepAliveTimer
 let connectionFailed
 let currentVolume
+let volumeTimeout
 let buttonDownTimeout
 
 // main entry point to establish volume management via a dialServer and retry as needed
@@ -125,7 +127,7 @@ function adjustVolume(data, config) {
   // currentVolume is used to make it smooth when there are a bunch
   // of adjustments being done in rapid succession. Each will build off
   // the prior one.
-  currentVolume = currentVolume || (state.mute === "1" ? state.muteVolume : state.volume)
+  currentVolume = (currentVolume !== undefined) ? currentVolume : (state.mute === "1" ? state.muteVolume : state.volume)
 
   // convert degrees to volume adjustment from +/- 0-100
   let volume = Math.round(Math.abs(data.degrees) / fullscale * 100) * Math.sign(data.degrees)
@@ -144,7 +146,13 @@ function adjustVolume(data, config) {
     state.volume = newVolume.toString()
     updateDisplay()
 
-    // send volume level request to player
+    // use a timeout to remove our cached volume which is used to make rapidly occuring optimistic updates
+    // appear smooth such as when the dial is rotated quickly. But I need to remove the cached value because
+    // it could be stale when volume adjustments are done from multiple sources (eg. apps or front panel)
+    clearTimeout(volumeTimeout)
+    volumeTimeout = setTimeout(() => currentVolume = undefined, volumeCacheTime)
+
+    // send volume level request to player and 
     playerRequest(`Volume?level=${newVolume}`, config)
       .then((result) => {
         // capture actual result
