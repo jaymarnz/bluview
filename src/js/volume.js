@@ -152,7 +152,7 @@ function adjustVolume(data, config) {
     clearTimeout(volumeTimeout)
     volumeTimeout = setTimeout(() => currentVolume = undefined, volumeCacheTime)
 
-    // send volume level request to player and 
+    // send volume level request to player
     playerRequest(`Volume?level=${newVolume}`, config)
       .then((result) => {
         // capture actual result
