@@ -1,3 +1,6 @@
+// Copyright 2023 jaymarnz, https://github.com/jaymarnz
+// See LICENSE for details
+
 const x2js = new X2JS()
 
 // send the player a command and return the result converted to json

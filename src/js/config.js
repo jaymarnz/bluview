@@ -1,3 +1,6 @@
+// Copyright 2023 jaymarnz, https://github.com/jaymarnz
+// See LICENSE for details
+
 const configlocalStorage = 'bluview-config'
 
 const defaultConfig = {

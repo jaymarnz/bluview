@@ -1,3 +1,6 @@
+// Copyright 2023 jaymarnz, https://github.com/jaymarnz
+// See LICENSE for details
+
 // rotary volume control is managed by a websocket server (dialServer)
 //
 // message format from server is JSON:
