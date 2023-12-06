@@ -40,9 +40,14 @@ function connect(config) {
     webSocket = new WebSocket(url)
 
     webSocket.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      if (data.degrees && isPlaying()) adjustVolume(data, config)
-      else if (data.button) buttonClick(data, config)
+      let data = {}
+      try {
+        data = JSON.parse(event.data)
+      } catch (err) {
+        if (config.logStatus) console.log('ignoring invalid event.data')
+      }
+      if (data.degrees && typeof data.degrees === 'number' && isPlaying()) adjustVolume(data, config)
+      else if (data.button && typeof data.button === 'string') buttonClick(data, config)
     }
 
     webSocket.onopen = () => {

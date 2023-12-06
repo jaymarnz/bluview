@@ -3,7 +3,7 @@
   "version": "1.1.2",
   "description": "What's Playing Display for BluOS Streamers",
   "author": "jaymarnz",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "node build.js",
