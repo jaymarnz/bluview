@@ -37,11 +37,28 @@ function setImageSrc(obj, url, options) {
     obj.hide()
 }
 
+// Specific case of setImageSrc that uses the state object's image property to handle special cases
+// such as tidal where extra parameters defined in the options are added to /Artwork api calls
+function setArtworkSrc(obj, state, options) {
+  let url = state.image
+
+  // see if it is a special resource and if so, add params from the options
+  if (state.image && state.serviceName === 'TIDAL' && options.artworkParams && options.artworkParams[state.serviceName]) {
+    Object.keys(options.artworkParams[state.serviceName]).forEach(key => {
+      url += `&${key}=${options.artworkParams[state.serviceName][key]}`
+    })
+  }
+
+  return setImageSrc(obj, url, options)
+}
+
 // construct the BluOS URL for a given API string
 // if the API is undefined return undefined
 // if the API starts with http or https then just return it as-is
 // finally prepend the base url but remove an optional slash at the beginning of the API as BluOS doesn't like that
 function _bluosURL(api, options) {
+  // ignore codewhisperer error because BluOS API doesn't support HTTPS
+  // codewhisperer-ignore CWE-319
   const baseUrl = `http://${options.playerIP}:11000/`
 
   if (!api) return api

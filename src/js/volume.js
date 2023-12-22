@@ -42,6 +42,8 @@ function connect(config) {
     webSocket.onmessage = (event) => {
       let data = {}
       try {
+        // ignored because I catch any invalid JSON and validate the fields below
+        // codewhisperer-ignore CWE-502,1321
         data = JSON.parse(event.data)
       } catch (err) {
         if (config.logStatus) console.log('ignoring invalid event.data')
@@ -143,8 +145,11 @@ function adjustVolume(data, config) {
   // ensure we always make an adjustment of at least one so slow small rotations work
   if (volume === 0) volume = 1 * Math.sign(data.degrees)
 
-  // add adjustment to existing volume and ensure result is between 0-100
+  // ignore codewhisperer issue because data.degrees has already been validated
+  // codewhisperer-ignore CWE-117
   if (config.logStatus) console.log(`adjustVolume: { degrees: ${data.degrees}, volume: ${currentVolume}, adjustment: ${volume}`)
+
+  // add adjustment to existing volume and ensure result is between 0-100
   const newVolume = Math.max(Math.min(parseInt(currentVolume) + volume, 100), 0)
 
   if (newVolume >= 0 && newVolume <= 100) {

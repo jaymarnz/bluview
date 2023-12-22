@@ -3,7 +3,10 @@
 
 let config = {
   disableLongPoll: false,
-  logStatus: false
+  logStatus: false,
+  artworkParams: {
+    TIDAL: { width: 640, height: 640 } // additional parameters when calling artwork api's
+  }
 }
 
 let state = {} // latest player status
@@ -91,7 +94,8 @@ function updateDisplay() {
     $('#playing').show()
     $('#notPlaying').hide()
 
-    setImageSrc($('#image'), state.image, config)
+    setArtworkSrc($('#image'), state, config)
+
     $('#title1').html(state.title1 || '') // song title or device (eg. TV)
     $('#title2').html(state.title2 || '') // artist
     $('#title3').html(state.title3 || '') // album
