@@ -60,6 +60,19 @@ p {
   font-weight: bold;
 }
 
+.fullscreen {
+  display: none;
+  position: fixed;
+  top: 7px;
+  right: 10px;
+  z-index: 9999;
+  background: transparent;
+  border: none;
+  font-size: 2em;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
 .run {
   display: none;
   height: 100%;

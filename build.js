@@ -1,7 +1,7 @@
 /*
 **  1. Inline external scripts, style sheets, and images
 **  2. Minify index.html
-**  3. Copy .png and .ico images
+**  3. Copy webmanifest, service worker and images
 */
 const fs = require('fs-extra')
 const {inlineScriptTags, inlineStylesheets, inlineImages} = require('inline-scripts');
@@ -22,11 +22,11 @@ inlineScriptTags('./src/index.html')
 .then (htmlString => inlineStylesheets({ htmlPath: './src/index.html', htmlString }))
 .then (htmlString => inlineImages({ htmlPath: './src/index.html', htmlString }))
 .then (htmlString => fs.writeFile('./dist/index.html', minify(htmlString, minifyOptions)))
-.then (async () => await copyimages())
+.then (async () => await copyFiles())
 
-async function copyimages() {
+async function copyFiles() {
   return new Promise((resolve, reject) => {
-    copy([ './src/*.png', './src/*.ico' ], './dist', (err, files) => {
+    copy([ './src/sw.js', './src/*.webmanifest', './src/*.png', './src/*.ico' ], './dist', (err, files) => {
       if (err) return reject(new Error(err))
       resolve()
     })

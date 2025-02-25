@@ -30,7 +30,7 @@ Functions support by the Surface Dial integration are:
 It runs entirely within your browser and there is no data sent or stored anywhere else. It saves its configuration data in your browser's local storage. Configuration data is the local IP address of your streamer and the optional wireless volume control IP address if you use that feature.
 
 ## Installation
-Copy `dist/index.html` to somewhere your browser can open it. The simplest is to put it on the device itself and open it in the browser with `file://<path-to-the-file>/index.html`
+There are no dependencies. Simply copy `dist/index.html` to somewhere your browser can open it. The simplest is to put it on the device itself and open it in the browser with `file://<path-to-the-file>/index.html`
 
 To download the file from GitHub: 
 1. https://raw.githubusercontent.com/jaymarnz/bluview/master/dist/index.html
@@ -65,7 +65,13 @@ The first time you open the page it will show a configuration screen. All you ne
 ## Kiosk Mode (Android)
 In some browsers you can make the page full-screen (eliminates the web address and other headers so it's just the web page). I recommend using it this way.
 
-I wasn't able to do this on my old Android tablet running Chrome so I use a free app called Fully Kiosk. There's probably others but this one works great for running BluView:<br>https://play.google.com/store/apps/details?id=de.ozerov.fully&hl=en_US&gl=US
+Another option is to enable the ``fullscreenButton`` in the blueview.js config. This adds a familar fullscreen icon to the top right of each page.
+
+That works on my old Android tablet along with using the ``Developer Options->Keep Awake`` to keep the screen on. But the Samsung OneUI still imposes a display timeout maximum of 30 minutes after which it dims the display. I've read this is fixed in a later release of OneUI but my tablet is too old.
+
+So, I've tried a few kiosk apps. I've been using [Fully Kiosk Browser](https://play.google.com/store/apps/details?id=de.ozerov.fully&hl=en_US&gl=US) for a long time but I find that the Fully app locks up every now and stops responding to touch or buttons and the tablet has to be restarted. 
+
+Recently I've started using [Kiosk Browser Lockdown](https://play.google.com/store/apps/details?id=com.procoit.kioskbrowser). It works well and meets my needs. Time will tell if it too will require the tablet to be restarted periodically. However, it has lots of configuration options and is designed to fully lockdown the device so carefully go through all the settings to make sure you don't lock yourself out of being able to exit or adjust settings.
 
 ## Kiosk Mode (iOS)
 iOS has a kiosk mode built-in. It's called Guided Access and is enabled in Settings -> Accessibility -> Guided Access

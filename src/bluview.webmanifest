@@ -1,0 +1,23 @@
+{
+  "name": "Bluview",
+  "short_name": "Blueview",
+  "description": "What's playing on my Bluesound NODE?",
+  "start_url": "index.html",
+  "id": "index.html",
+  "display": "fullscreen",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "orientation": "landscape",
+  "serviceworker": {
+    "scope": "*?",
+    "src": "sw.js",
+    "use_cache": false
+  },
+  "icons": [
+    {
+      "src": "favicon-120x120.png",
+      "type": "image/png",
+      "sizes": "120x120"
+    }
+  ]
+}

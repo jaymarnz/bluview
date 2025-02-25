@@ -4,6 +4,7 @@
 let config = {
   disableLongPoll: false,
   logStatus: false,
+  fullscreenButton: false, // add a button in upper right corner to switch browser to fullscreen (not needed if using in kiosk mode)
   artworkParams: {
     TIDAL: { width: 640, height: 640 } // additional parameters when calling artwork api's
   }
@@ -23,8 +24,45 @@ $(async function () {
     location.reload()
   });
 
-  await run()
+  // add a fullscreen button - this is currently disabled by default (above).
+  // I thought I could do this to avoid having to use a kiosk app. It works fine but
+  // even with "Developer Settings->Keep Awake" my Samsung tablet still dims the screen when
+  // the display timeout is reached and the maximum I can set the timeout is 30 mins.
+  // So, I'll need to continue using a Kiosk Browser app.
+  //
+  // But for others with different tablets or phones they may find this feature useful
+  //
+  if (config.fullscreenButton) {
+    $('#fullscreen').show()
+    $('#fullscreen').click(() => enableFullScreen())
+
+    // hide the fullscreen button when running in fullscreen mode
+    $(document).on("fullscreenchange", function() {
+      if (document.fullscreenElement) {
+        $('#fullscreen').hide()
+      } else {
+        $('#fullscreen').show()
+      }
+    })
+  }
+
+  run()
 })
+
+async function enableFullScreen() {
+  let requestFunc = 
+    document.documentElement.requestFullscreen ||
+    document.documentElement.webkitRequestFullscreen || // Safari
+    document.documentElement.mozRequestFullScreen ||    // Firefox
+    document.documentElement.msRequestFullscreen        // IE/Edge
+
+    if (requestFunc) {
+      // call function with the documentElement context
+      requestFunc.call(document.documentElement).catch((err) => {
+        console.error('Failed to enter full screen:', err)
+    })
+  }
+}
 
 // main run loop
 async function run() {
