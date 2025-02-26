@@ -69,7 +69,7 @@ Another option is to enable the ``fullscreenButton`` in the blueview.js config. 
 
 That works on my old Android tablet along with using the ``Developer Options->Keep Awake`` to keep the screen on. But the Samsung OneUI still imposes a display timeout maximum of 30 minutes after which it dims the display. I've read this is fixed in a later release of OneUI but my tablet is too old.
 
-So, I've tried a few kiosk apps. I've been using [Fully Kiosk Browser](https://play.google.com/store/apps/details?id=de.ozerov.fully&hl=en_US&gl=US) for a long time but I find that the Fully app locks up every now and stops responding to touch or buttons and the tablet has to be restarted. 
+So, I've tried a few kiosk apps. I've been using [Fully Kiosk Browser](https://play.google.com/store/apps/details?id=de.ozerov.fully&hl=en_US&gl=US) for a long time but I find that the Fully app locks up periodically and stops responding to touch or buttons and the tablet has to be restarted. 
 
 Recently I've started using [Kiosk Browser Lockdown](https://play.google.com/store/apps/details?id=com.procoit.kioskbrowser). It works well and meets my needs. Time will tell if it too will require the tablet to be restarted periodically. However, it has lots of configuration options and is designed to fully lockdown the device so carefully go through all the settings to make sure you don't lock yourself out of being able to exit or adjust settings.
 
