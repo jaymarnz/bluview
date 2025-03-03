@@ -81,36 +81,18 @@ function isValidIpPort(str) {
   return (!match[6] || (match[6] >= 1 && match[6] <= 65535))
 }
 
-// adapted from: https://jsfiddle.net/cse_tushar/aPM5X/3
-// pass a jquery selector for the ip address text field and the button to be enabled/disabled
 function enableButtonIfValidIP(field, button) {
-  let x = 46
-
   // start with the button disabled if the IP isn't currently valid
   $(button).prop("disabled", !IpPattern.test($(field).val()))
 
   $(field).keypress(e => {
-    if (e.which != 8 && e.which != 0 && e.which != x && (e.which < 48 || e.which > 57)) {
+    // valid chars are backspace, delete, dot, 0-9. all others are ignored
+    if (e.which != 8 && e.which != 46 && e.which != 127 && (e.which < 48 || e.which > 57)) {
       $(button).prop("disabled", true)
       return false
     }
   }).keyup(() => {
     const this1 = $(field)
-    if (!IpPattern.test(this1.val())) {
-      $(button).prop("disabled", true)
-      while (this1.val().indexOf("..") !== -1) {
-        this1.val(this1.val().replace('..', '.'))
-      }
-      x = 46
-    } else {
-      x = 0
-      const lastChar = this1.val().substr(this1.val().length - 1)
-      if (lastChar == '.') {
-        this1.val(this1.val().slice(0, -1))
-      }
-      if (this1.val().split('.').length == 4) {
-        $(button).prop("disabled", false)
-      }
-    }
+    $(button).prop("disabled", !IpPattern.test(this1.val()) || this1.val().split('.').length != 4)
   })
 }
