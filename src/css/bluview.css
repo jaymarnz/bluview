@@ -58,6 +58,7 @@ p {
 .paraHead {
   font-size: 110%;
   font-weight: bold;
+  text-decoration: underline
 }
 
 .fullscreen {
