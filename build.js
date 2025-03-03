@@ -22,7 +22,7 @@ inlineScriptTags('./src/index.html')
 .then (htmlString => inlineStylesheets({ htmlPath: './src/index.html', htmlString }))
 .then (htmlString => inlineImages({ htmlPath: './src/index.html', htmlString }))
 .then (htmlString => fs.writeFile('./dist/index.html', minify(htmlString, minifyOptions)))
-.then (async () => await copyFiles())
+.then (copyFiles())
 
 async function copyFiles() {
   return new Promise((resolve, reject) => {
