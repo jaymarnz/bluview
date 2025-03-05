@@ -79,9 +79,19 @@ p {
   height: 100%;
 }
 
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .config {
   display: none;
   height: 100%;
+  margin: 0 auto;
+  padding: 0 2vw;
+  font-size: 95%;
 }
 
 .notPlaying {
@@ -118,7 +128,8 @@ p {
   flex-direction: column;
   flex: 1;
   margin-left: 15px;
-  min-width: 0;
+  margin-top: -10px; /* I don't know why this is needed to better align the text with the top of the image */
+  width: 500px;
 }
 
 .bottom {
@@ -136,6 +147,14 @@ p {
   font-size: 6em;
   font-weight: bold;
   line-height: 1em;
+}
+
+.timeOfDay.large {
+  font-size: clamp(6em, 19vw, 9em);
+}
+
+.timeOfDay.small {
+  font-size: 6em;
 }
 
 .today {
@@ -171,13 +190,11 @@ p {
 }
 
 #title2 {
-  margin-block-start: 0.25em;
   font-size: 2em;
   font-weight: bold;
 }
 
 #title3 {
-  margin-block-start: 0.25em;
   font-size: 1.5em;
   font-weight: normal;
 }

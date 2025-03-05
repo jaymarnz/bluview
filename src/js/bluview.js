@@ -138,7 +138,12 @@ function updateDisplay() {
     $('#title2').html(state.title2 || '') // artist
     $('#title3').html(state.title3 || '') // album
 
-    $('#timeOfDay').css('fontSize', (state.title1 && (state.title2 || state.title3)) ? '6em' : '10em')
+    const hasTitle1 = state.title1 !== undefined && state.title1 !== ''
+    const hasTitle2OrTitle3 = state.title2 !== undefined || state.title3 !== undefined
+    const isSmallTime = hasTitle1 && hasTitle2OrTitle3
+    
+    $('#timeOfDay').toggleClass('small', isSmallTime)
+    $('#timeOfDay').toggleClass('large', !isSmallTime)
 
     setImageSrc($('#serviceIcon'), state.serviceIcon, config)
     // $('#serviceName').html(state.serviceName || '')
