@@ -132,11 +132,12 @@ function pausePlay(config, pause) { // pass true to pause player and false to re
 }
 
 function adjustVolume(data, config) {
-  const fullscale = 270.0 // number of degrees to scale degrees to volume
+  // number of degrees to scale to volume (0-100)
+  // adjust to provide smooth volume changes in concert with dial step resolution in dialServer
+  const fullscale = 270.0 
 
   // currentVolume is used to make it smooth when there are a bunch
-  // of adjustments being done in rapid succession. Each will build off
-  // the prior one.
+  // of adjustments being done in rapid succession. Each will build off the prior one.
   currentVolume = (currentVolume !== undefined) ? currentVolume : (state.mute === "1" ? state.muteVolume : state.volume)
 
   // convert degrees to volume adjustment from +/- 0-100
