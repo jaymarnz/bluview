@@ -59,7 +59,7 @@ function connect(config) {
 
     webSocket.onclose = () => {
       if (config.logStatus) console.log('connection closed to dialServer')
-      clearTimeout(keepAliveTimer)
+      clearInterval(keepAliveTimer)
       webSocket = undefined // try again later
     }
 
