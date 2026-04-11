@@ -18,9 +18,10 @@ function playerRequest(command, options) {
         return resolve(x2js.xml2json(xhr.responseXML))
       })
       .fail((xhr, status, error) => {
+        console.error('XHR failed for URL:', url, 'XHR object:', xhr)
         return reject(new Error(
           options.errorMessage || (error === 'timeout' ? 'Player request timed out'
-            : `Error conmmunicating with the player ${error ? '(' + error + ')' : ''}<br>Check the IP address is correct and reachable`)
+            : `Error communicating with the player ${error ? '(' + error + ')' : ''} (Status: ${xhr.status} ${xhr.statusText}, Ready State: ${xhr.readyState})<br>URL: ${url}<br>Response: ${xhr.responseText || 'No response body'}<br>Check the IP address is correct and reachable`)
         ))
       })
   })

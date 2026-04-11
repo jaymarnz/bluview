@@ -83,6 +83,7 @@ async function run() {
       await updatePlayer()
     } catch (error) {
       etag = undefined
+      window.alert(error) // DEBUGGING
       console.log(error)
     }
 
@@ -101,13 +102,13 @@ async function updatePlayer() {
   let query = 'Status'
   if (canLongPoll()) query = query + `?timeout=${config.pollTimeout}&etag=${etag}`
 
-  state = await playerRequest(query, {
+  resp = await playerRequest(query, {
     // ensure that all requests have a timeout. if no fetchTimeout is supplied then use the pollTimeout+1s or 30s if not long polling
     ...{ fetchTimeout: (canLongPoll() ? config.pollTimeout * 1000 + 1000 : 30000) },
     ...config
   })
 
-  state = state.status || {}
+  state = resp.status || {}
   etag = state._etag
   updateDisplay()
 }
