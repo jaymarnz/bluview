@@ -83,7 +83,7 @@ async function run() {
       await updatePlayer()
     } catch (error) {
       etag = undefined
-      window.alert(error) // DEBUGGING
+      // window.alert(error) // DEBUGGING ONLY
       console.log(error)
     }
 
