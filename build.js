@@ -5,7 +5,7 @@
 */
 const fs = require('fs-extra')
 const {inlineScriptTags, inlineStylesheets, inlineImages} = require('inline-scripts');
-const minify = require('html-minifier').minify;
+const minify = require('html-minifier-next').minify;
 const copy = require('copy')
 
 const minifyOptions = {
@@ -16,14 +16,6 @@ const minifyOptions = {
   removeComments: true
 }
 
-fs.ensureDirSync('./dist', { recursive: true })
-
-inlineScriptTags('./src/index.html')
-.then (htmlString => inlineStylesheets({ htmlPath: './src/index.html', htmlString }))
-.then (htmlString => inlineImages({ htmlPath: './src/index.html', htmlString }))
-.then (htmlString => fs.writeFile('./dist/index.html', minify(htmlString, minifyOptions)))
-.then (copyFiles())
-
 async function copyFiles() {
   return new Promise((resolve, reject) => {
     copy([ './src/sw.js', './src/*.webmanifest', './src/*.png', './src/*.ico' ], './dist', (err, files) => {
@@ -32,3 +24,13 @@ async function copyFiles() {
     })
   })
 }
+
+fs.ensureDirSync('./dist', { recursive: true })
+
+inlineScriptTags('./src/index.html')
+.then (htmlString => inlineStylesheets({ htmlPath: './src/index.html', htmlString }))
+.then (htmlString => inlineImages({ htmlPath: './src/index.html', htmlString }))
+.then (htmlString => minify(htmlString, minifyOptions))
+.then (htmlString => fs.writeFile('./dist/index.html', htmlString, minifyOptions))
+.then (copyFiles())
+.then (console.log('Build complete!'))

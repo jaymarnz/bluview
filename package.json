@@ -1,6 +1,6 @@
 {
   "name": "bluview",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "What's Playing Display for BluOS Streamers",
   "author": "jaymarnz",
   "license": "GPL-3.0",
@@ -10,8 +10,8 @@
   },
   "devDependencies": {
     "copy": "^0.3.2",
-    "fs-extra": "^11.2.0",
-    "html-minifier": "^4.0.0",
+    "fs-extra": "^11.3.4",
+    "html-minifier-next": "^6.1.2",
     "inline-scripts": "github:jaymarnz/inline-scripts"
   }
 }
