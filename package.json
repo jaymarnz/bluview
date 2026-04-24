@@ -11,7 +11,7 @@
   "devDependencies": {
     "copy": "^0.3.2",
     "fs-extra": "^11.3.4",
-    "html-minifier-next": "^6.1.2",
+    "html-minifier-next": "^6.1.4",
     "inline-scripts": "github:jaymarnz/inline-scripts"
   }
 }
