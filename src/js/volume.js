@@ -18,6 +18,7 @@ let keepAliveTimer
 let connectionFailed
 let currentVolume
 let volumeTimeout
+let volumeSeq = 0
 let buttonDownTimeout
 
 // main entry point to establish volume management via a dialServer and retry as needed
@@ -131,6 +132,14 @@ function pausePlay(config, pause) { // pass true to pause player and false to re
     .catch((error) => console.error(error))
 }
 
+// While the dial is actively adjusting the volume, keep our optimistic value on any freshly
+// polled status. The Status long-poll returns the Node's volume which lags the rapid optimistic
+// updates, and without this it would briefly flash the slider to that stale value mid-spin.
+// Once the spin settles currentVolume is cleared (see volumeCacheTime) and the poll value takes over.
+function reconcileAdjustingVolume() {
+  if (currentVolume !== undefined) state.volume = currentVolume.toString()
+}
+
 function adjustVolume(data, config) {
   // number of degrees to scale to volume (0-100)
   // adjust to provide smooth volume changes in concert with dial step resolution in dialServer
@@ -166,9 +175,17 @@ function adjustVolume(data, config) {
     clearTimeout(volumeTimeout)
     volumeTimeout = setTimeout(() => currentVolume = undefined, volumeCacheTime)
 
-    // send volume level request to player
+    // send volume level request to player.
+    // During a rapid spin many requests are in flight at once and they can complete out of
+    // order (especially under network latency). Tag each with a sequence number and only let the
+    // most recently sent request reconcile the display from the actual result, otherwise a
+    // late-arriving older response would briefly slam the volume to a stale value.
+    const seq = ++volumeSeq
     playerRequest(`Volume?level=${newVolume}`, config)
       .then((result) => {
+        // ignore stale responses from earlier requests that completed after a newer one
+        if (seq !== volumeSeq) return
+
         // capture actual result
         state.volume = result.__text
         updateDisplay()

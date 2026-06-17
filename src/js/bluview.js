@@ -110,6 +110,7 @@ async function updatePlayer() {
 
   state = resp.status || {}
   etag = state._etag
+  reconcileAdjustingVolume() // don't let a lagging poll clobber the volume mid-spin
   updateDisplay()
 }
 
