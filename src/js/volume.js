@@ -20,6 +20,7 @@ let currentVolume
 let volumeTimeout
 let volumeSeq = 0
 let buttonDownTimeout
+let dialConnected = false // whether the Surface Dial is currently connected to the dialServer
 
 // main entry point to establish volume management via a dialServer and retry as needed
 async function enableVolumeManagement(config) {
@@ -49,7 +50,8 @@ function connect(config) {
       } catch (err) {
         if (config.logStatus) console.log('ignoring invalid event.data')
       }
-      if (data.degrees && typeof data.degrees === 'number' && isPlaying()) adjustVolume(data, config)
+      if (data.status && typeof data.status === 'string') setDialConnected(config, data.status === 'connected')
+      else if (data.degrees && typeof data.degrees === 'number' && isPlaying()) adjustVolume(data, config)
       else if (data.button && typeof data.button === 'string') buttonClick(data, config)
     }
 
@@ -61,15 +63,27 @@ function connect(config) {
     webSocket.onclose = () => {
       if (config.logStatus) console.log('connection closed to dialServer')
       clearInterval(keepAliveTimer)
+      setDialConnected(config, false) // we no longer know the dial's state - assume disconnected
       webSocket = undefined // try again later
     }
 
     webSocket.onerror = (event) => {
       if (config.logStatus) console.log('connection error with dialServer')
+      setDialConnected(config, false) // we no longer know the dial's state - assume disconnected
       if (webSocket.readyState === webSocket.OPEN) webSocket.close()
       webSocket = undefined // try again later
     }
   }
+}
+
+// reflect the dial's connection status on the volume bar so it's clear when physical dial
+// control is available. The dialServer sends the current status as soon as we connect and
+// again whenever it changes; we also default back to disconnected if the socket drops.
+function setDialConnected(config, connected) {
+  if (dialConnected === connected) return
+  if (config.logStatus) console.log(`dial ${connected ? 'connected' : 'disconnected'}`)
+  dialConnected = connected
+  $('#volume').toggleClass('dial', dialConnected)
 }
 
 function buttonClick(data, config) {
@@ -122,6 +136,16 @@ function toggleMute(config) {
 
 function setMute(config, value) {
   if (config.logStatus) console.log(`setMute: ${value}`)
+
+  // optimistically reflect the change so a dial click updates the display immediately instead
+  // of waiting for the next long-poll (mirrors the optimistic update in adjustVolume). The
+  // player keeps the pre-mute level in muteVolume while muted, so mirror that here to keep the
+  // bar level steady across the toggle - only the mute fade/icon should change.
+  if (value === 1) state.muteVolume = state.volume      // remember the current level
+  else state.volume = state.muteVolume || state.volume  // restore the level on unmute
+  state.mute = value.toString()
+  updateDisplay()
+
   playerRequest(`Volume?mute=${value}`, config)
     .catch((error) => console.error(error))
 }
@@ -137,7 +161,12 @@ function pausePlay(config, pause) { // pass true to pause player and false to re
 // updates, and without this it would briefly flash the slider to that stale value mid-spin.
 // Once the spin settles currentVolume is cleared (see volumeCacheTime) and the poll value takes over.
 function reconcileAdjustingVolume() {
-  if (currentVolume !== undefined) state.volume = currentVolume.toString()
+  // while actively spinning we've optimistically set the volume and unmuted (changing the level
+  // unmutes the player) - don't let a lagging poll clobber either mid-spin
+  if (currentVolume !== undefined) {
+    state.volume = currentVolume.toString()
+    state.mute = '0'
+  }
 }
 
 function adjustVolume(data, config) {
@@ -165,7 +194,10 @@ function adjustVolume(data, config) {
   if (newVolume >= 0 && newVolume <= 100) {
     currentVolume = newVolume
 
-    // optimistic update of the display to make it a more fluid UX
+    // optimistic update of the display to make it a more fluid UX. Changing the level also
+    // unmutes the player, so clear mute locally too - otherwise updateDisplay would keep
+    // reading the bar level from muteVolume (and stay faded) until the next poll catches up.
+    state.mute = '0'
     state.volume = newVolume.toString()
     updateDisplay()
 

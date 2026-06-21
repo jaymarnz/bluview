@@ -160,7 +160,11 @@ function updateDisplay() {
     $('#quality').html((quality === 'MQAAUTHORED') ? 'MQA (AUTH)' : quality)
     $('#streamFormat').html(state.streamFormat || '')
 
-    $('#volume').attr('class', (state.mute === '1') ? 'muted' : 'notmuted')
+    // toggle (rather than overwrite) the classes so the dialConnected 'dial' tint, which is
+    // maintained independently by volume.js, survives a status refresh
+    $('#volume').toggleClass('muted', state.mute === '1')
+    $('#volume').toggleClass('notmuted', state.mute !== '1')
+    $('#volume').toggleClass('dial', dialConnected)
     $('#volume_level').width(((state.mute === '1') ? state.muteVolume : state.volume) + '%')
   }
 }

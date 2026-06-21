@@ -243,12 +243,39 @@ p {
   width: 0;
 }
 
-.muted #volume_level {
-  background-color: #c3c3c3;
+/* The volume bar fill colour reflects DIAL state only: near-white normally, accent chocolate
+   when the Surface Dial is connected. MUTE is shown separately by fading the whole control
+   (see the .muted rule above), so the two are independent and mute reads in every state -
+   no-dialserver, dial connected or dial disconnected. */
+#volume_level {
+  background-color: #e3e3e3;
 }
 
-.notmuted #volume_level {
-  background-color: #e3e3e3;
+.dial #volume_level {
+  background-color: #d2691e;
+}
+
+/* When the Surface Dial is connected, tint the volume control in the app's accent colour
+   (chocolate) so it's obvious physical dial control is available - the bar fill (above), the
+   box border and the speaker icon. The 'dial' class is toggled from the dialServer status
+   messages (see volume.js); without it the control stays the default near-white. */
+.dial #volume_box {
+  border-color: #d2691e;
+}
+
+/* MUTE is shown by fading the whole volume control (bar, border and speaker icon) - an obvious
+   "muted" cue on top of the slashed speaker icon, and independent of the dial tint so it works
+   in every state. */
+.muted {
+  opacity: 0.5;
+}
+
+.dial.notmuted {
+  background-image: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M320,320c9.74-19.38,16-40.84,16-64,0-23.48-6-44.42-16-64" stroke="%23d2691e" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><path d="M368,368c19.48-33.92,32-64.06,32-112s-12-77.74-32-112" stroke="%23d2691e" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><path d="M416,416c30-46,48-91.43,48-160S446,143,416,96" stroke="%23d2691e" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><polygon fill="%23d2691e" points="125.65 176.1 32 176.1 32 335.9 125.65 335.9 256 440 256 72 125.65 176.1"/></svg>');
+}
+
+.dial.muted {
+  background-image: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><line x1="416" y1="432" x2="64" y2="80" stroke="%23d2691e" stroke-linecap="square" stroke-miterlimit="10" stroke-width="32px" fill="none"/><polygon fill="%23d2691e" points="256 72 182.4 130.78 256 204.37 256 72"/><polygon fill="%23d2691e" points="32 176.1 32 335.9 125.65 335.9 256 440 256 339.63 92.47 176.1 32 176.1"/></svg>');
 }
 
 #configForm {
