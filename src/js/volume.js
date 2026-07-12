@@ -13,6 +13,10 @@ const keepAliveTime = 30 * 1000   // just to make sure the server hasn't gone aw
 const longPressTime = 500         // this is the default long press time on Android
 const volumeCacheTime = 1000      // to make the U/I smooth I cache the current volume but only for this time period
 
+// number of degrees of dial rotation for a full 0-100 volume sweep
+// higher = less sensitive (more rotation per change); adjust in concert with dial step resolution in dialServer
+const fullscale = 360.0
+
 let webSocket
 let keepAliveTimer
 let connectionFailed
@@ -170,10 +174,6 @@ function reconcileAdjustingVolume() {
 }
 
 function adjustVolume(data, config) {
-  // number of degrees to scale to volume (0-100)
-  // adjust to provide smooth volume changes in concert with dial step resolution in dialServer
-  const fullscale = 270.0 
-
   // currentVolume is used to make it smooth when there are a bunch
   // of adjustments being done in rapid succession. Each will build off the prior one.
   currentVolume = (currentVolume !== undefined) ? currentVolume : (state.mute === "1" ? state.muteVolume : state.volume)
