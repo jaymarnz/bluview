@@ -136,6 +136,17 @@ p {
   margin-top: auto;
 }
 
+/* Low dial-battery warning: a plain white line shown above the stream info in the now-playing
+   view, left-aligned to match the rest of the column. Hidden until volume.js toggles it on a
+   low reading. */
+#batteryWarning {
+  display: none;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 0.25em;
+}
+
 .text {
   text-overflow: ellipsis;
   overflow: hidden;

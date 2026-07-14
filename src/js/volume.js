@@ -7,6 +7,7 @@
 //    { button: 'up' | 'down' }
 //    { degrees: +/- n }
 //    { status: 'status message' }
+//    { battery: n }   // dial battery percentage 0-100
 //
 const connectRetryTime = 5 * 1000 // period to check for a connection and try to establish if necessary
 const keepAliveTime = 30 * 1000   // just to make sure the server hasn't gone away
@@ -25,6 +26,7 @@ let volumeTimeout
 let volumeSeq = 0
 let buttonDownTimeout
 let dialConnected = false // whether the Surface Dial is currently connected to the dialServer
+let lowBatteryShown = false // whether the low dial-battery warning is currently displayed
 
 // main entry point to establish volume management via a dialServer and retry as needed
 async function enableVolumeManagement(config) {
@@ -57,6 +59,7 @@ function connect(config) {
       if (data.status && typeof data.status === 'string') setDialConnected(config, data.status === 'connected')
       else if (data.degrees && typeof data.degrees === 'number' && isPlaying()) adjustVolume(data, config)
       else if (data.button && typeof data.button === 'string') buttonClick(data, config)
+      else if (typeof data.battery === 'number') handleBattery(data, config)
     }
 
     webSocket.onopen = () => {
@@ -88,6 +91,22 @@ function setDialConnected(config, connected) {
   if (config.logStatus) console.log(`dial ${connected ? 'connected' : 'disconnected'}`)
   dialConnected = connected
   $('#volume').toggleClass('dial', dialConnected)
+}
+
+// dialServer reports the dial's battery level (once per wake/connect and to each new client).
+// Show a small warning overlaid on the volume slider when it's at/below the threshold, and clear
+// it when a reading comes back above (ie. the battery was replaced). The warning lives in the
+// now-playing view where the slider is shown.
+function handleBattery(data, config) {
+  const percent = data.battery
+  const low = percent <= (config.lowBatteryThreshold || 15)
+
+  if (low !== lowBatteryShown && config.logStatus)
+    console.log(`dial battery ${low ? 'low' : 'ok'}: ${percent}%`)
+  lowBatteryShown = low
+
+  $('#batteryPercent').text(`${percent}%`)
+  $('#batteryWarning').toggle(low)
 }
 
 function buttonClick(data, config) {

@@ -7,7 +7,8 @@ const defaultConfig = {
   playerIP: undefined,
   dialServerIP: undefined,
   dialserverDefaultPort: 3000,
-  pollTimeout: 100 // BluOS recommended long polling timeout (secs)
+  pollTimeout: 100, // BluOS recommended long polling timeout (secs)
+  lowBatteryThreshold: 15 // show the "replace dial battery" warning at/below this percentage
 }
 
 // return a config object from either localStorage or by prompting the user

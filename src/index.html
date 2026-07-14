@@ -64,6 +64,10 @@
             <div class="timeOfDay" id="timeOfDay"></div>
 
             <div class="bottom">
+              <!-- low dial-battery warning, shown above the stream info in the now-playing view.
+                   In .bottom (not #volume) so the mute opacity-fade doesn't dim it -->
+              <div id="batteryWarning">Surface Dial battery is low: <span id="batteryPercent"></span></div>
+
               <div id="streamInfo">
                 <img id="serviceIcon" />
                 <!-- <div id="serviceName"></div> -->
