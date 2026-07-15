@@ -12,6 +12,25 @@ let config = {
 
 let state = {} // latest player status
 
+// --- opt-in on-screen debug log (enable with ?debug in the URL; the tablet has no dev console) ---
+let dbgBuf = []
+function dbg(msg) {
+  if (!config.logStatus) return
+  dbgBuf.push(new Date().toISOString().substr(11, 12) + ' ' + msg)
+  if (dbgBuf.length > 34) dbgBuf.shift()
+  const el = document.getElementById('dbglog')
+  if (el) el.textContent = dbgBuf.join('\n')
+}
+function dbgInit() {
+  if (!config.logStatus || document.getElementById('dbglog')) return
+  const el = document.createElement('div')
+  el.id = 'dbglog'
+  el.style.cssText = 'position:fixed;top:0;left:0;z-index:99999;max-width:72vw;max-height:100vh;' +
+    'overflow-y:auto;background:rgba(0,0,0,.78);color:#0f0;font:11px/1.3 monospace;white-space:pre;' +
+    'padding:4px;pointer-events:none'
+  document.body.appendChild(el)
+}
+
 // entry point
 $(async function () {
   // clicking on the screen in clock-mode will force back into config mode by reloading the page
@@ -67,6 +86,8 @@ async function enableFullScreen() {
 // main run loop
 async function run() {
   config = await getConfig(config)
+  config.logStatus = config.logStatus || /[?&]debug/i.test(location.search)
+  dbgInit()
 
   $('#playing').hide()
   $('#notPlaying').show()
@@ -110,7 +131,15 @@ async function updatePlayer() {
 
   state = resp.status || {}
   etag = state._etag
-  reconcileAdjustingVolume() // don't let a lagging poll clobber the volume mid-spin
+  dbg(`POLL mute=${state.mute} vol=${state.volume}`)
+  // sync our authoritative volume from the player, so external changes (front-panel/app) show up.
+  // Only trust the poll's volume when unmuted (BluOS reports 0 while muted) and when we're not
+  // mid-spin (currentVolume, which is fresher than a lagging poll).
+  if (state.mute !== '1' && currentVolume === undefined) {
+    const v = parseInt(state.volume)
+    if (!isNaN(v)) realVolume = v
+  }
+  reconcileAdjustingVolume() // don't let a lagging poll clobber the volume/mute mid-spin or mid-press
   updateDisplay()
 }
 
@@ -165,7 +194,9 @@ function updateDisplay() {
     $('#volume').toggleClass('muted', state.mute === '1')
     $('#volume').toggleClass('notmuted', state.mute !== '1')
     $('#volume').toggleClass('dial', dialConnected)
-    $('#volume_level').width(((state.mute === '1') ? state.muteVolume : state.volume) + '%')
+    // the bar renders from our authoritative level (not the poll's volume, which BluOS reports as 0
+    // while muted); muting only toggles the fade above. Falls back to the poll before the first read.
+    $('#volume_level').width((realVolume !== undefined ? realVolume : (state.volume || 0)) + '%')
   }
 }
 

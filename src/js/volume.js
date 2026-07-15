@@ -22,8 +22,12 @@ let webSocket
 let keepAliveTimer
 let connectionFailed
 let currentVolume
+let realVolume            // our authoritative volume level (0-100); the bar renders from this so a
+                          // muted poll's vol=0 (BluOS reports 0 while muted) can never drop the bar
 let volumeTimeout
 let volumeSeq = 0
+let optimisticMute        // mute we've set but the polls haven't caught up to yet (see reconcile)
+let divergentMutePolls = 0 // consecutive polls disagreeing with optimisticMute; releases it at 2
 let buttonDownTimeout
 let dialConnected = false // whether the Surface Dial is currently connected to the dialServer
 let lowBatteryShown = false // whether the low dial-battery warning is currently displayed
@@ -57,7 +61,11 @@ function connect(config) {
         if (config.logStatus) console.log('ignoring invalid event.data')
       }
       if (data.status && typeof data.status === 'string') setDialConnected(config, data.status === 'connected')
-      else if (data.degrees && typeof data.degrees === 'number' && isPlaying()) adjustVolume(data, config)
+      // Mute is toggled only by the button, never by rotation. The dial trips a little rotation as
+      // you press it (a push nudges the sensitive encoder), and acting on that would flip the mute
+      // state right around a press - so while muted we ignore rotation entirely. Press to unmute,
+      // then turn to adjust.
+      else if (data.degrees && typeof data.degrees === 'number' && isPlaying() && !isMute()) adjustVolume(data, config)
       else if (data.button && typeof data.button === 'string') buttonClick(data, config)
       else if (typeof data.battery === 'number') handleBattery(data, config)
     }
@@ -110,6 +118,7 @@ function handleBattery(data, config) {
 }
 
 function buttonClick(data, config) {
+  dbg(`btn ${data.button}`)
   switch (data.button) {
     case 'down':
       // this auto-activates long press without waiting for button up
@@ -135,6 +144,7 @@ function buttonClick(data, config) {
 }
 
 function shortPress(config) {
+  dbg(`shortPress mute=${state.mute} isMute=${isMute()}`)
   if (config.logStatus) console.log(`shortPress in state: ${state.state}, mute: ${state.mute}`)
 
   if (state.state === 'pause') longPress(config) // if paused then a short press is the same as a long press
@@ -158,14 +168,21 @@ function toggleMute(config) {
 }
 
 function setMute(config, value) {
+  dbg(`setMute(${value}) realVol=${realVolume} opt=${optimisticMute}`)
   if (config.logStatus) console.log(`setMute: ${value}`)
 
-  // optimistically reflect the change so a dial click updates the display immediately instead
-  // of waiting for the next long-poll (mirrors the optimistic update in adjustVolume). The
-  // player keeps the pre-mute level in muteVolume while muted, so mirror that here to keep the
-  // bar level steady across the toggle - only the mute fade/icon should change.
-  if (value === 1) state.muteVolume = state.volume      // remember the current level
-  else state.volume = state.muteVolume || state.volume  // restore the level on unmute
+  // Record our intended mute so reconcileAdjustingVolume can re-assert it while the polls lag the
+  // command (which otherwise flickers the mute right after a dial press). It's given up as soon as
+  // the player agrees, or after it persistently disagrees, so an external mute change still syncs -
+  // no fixed timer. Also drop any cached spin volume so a lagging poll can't force the mute back off.
+  optimisticMute = value.toString()
+  divergentMutePolls = 0
+  clearTimeout(volumeTimeout)
+  currentVolume = undefined
+
+  // optimistically reflect the mute so a dial click updates the display immediately. The bar level
+  // comes from realVolume (which muting doesn't change), so muting only toggles the fade/icon and
+  // the level stays put - no more muteVolume bookkeeping to get wiped by a poll.
   state.mute = value.toString()
   updateDisplay()
 
@@ -184,18 +201,41 @@ function pausePlay(config, pause) { // pass true to pause player and false to re
 // updates, and without this it would briefly flash the slider to that stale value mid-spin.
 // Once the spin settles currentVolume is cleared (see volumeCacheTime) and the poll value takes over.
 function reconcileAdjustingVolume() {
+  const polledMute = state.mute // the player's raw report, before the optimistic overrides below
+
   // while actively spinning we've optimistically set the volume and unmuted (changing the level
   // unmutes the player) - don't let a lagging poll clobber either mid-spin
   if (currentVolume !== undefined) {
     state.volume = currentVolume.toString()
     state.mute = '0'
   }
+
+  // Hold our intended mute over the polls after a press: the poll lags the command by a poll or two
+  // and would otherwise flick the mute back to its old value and then forward again. But we must
+  // still reflect an external mute change (player buttons / another app), so we don't hold with a
+  // timer - we give the intent up the moment the player agrees, and also if it DISAGREES twice in a
+  // row (a single disagreement is just the lag; a persistent one is a real external change, or our
+  // own command that didn't take).
+  if (optimisticMute !== undefined) {
+    if (polledMute === optimisticMute) {
+      optimisticMute = undefined
+      divergentMutePolls = 0
+    } else if (++divergentMutePolls >= 2) {
+      optimisticMute = undefined
+    } else {
+      state.mute = optimisticMute
+    }
+  }
+
+  if (currentVolume !== undefined || optimisticMute !== undefined)
+    dbg(`recon→mute=${state.mute} vol=${state.volume} opt=${optimisticMute} rV=${realVolume}`)
 }
 
 function adjustVolume(data, config) {
   // currentVolume is used to make it smooth when there are a bunch
   // of adjustments being done in rapid succession. Each will build off the prior one.
-  currentVolume = (currentVolume !== undefined) ? currentVolume : (state.mute === "1" ? state.muteVolume : state.volume)
+  currentVolume = (currentVolume !== undefined) ? currentVolume
+    : (realVolume !== undefined ? realVolume : (parseInt(state.volume) || 0))
 
   // convert degrees to volume adjustment from +/- 0-100
   let volume = Math.round(Math.abs(data.degrees) / fullscale * 100) * Math.sign(data.degrees)
@@ -210,12 +250,15 @@ function adjustVolume(data, config) {
   // add adjustment to existing volume and ensure result is between 0-100
   const newVolume = Math.max(Math.min(parseInt(currentVolume) + volume, 100), 0)
 
+  dbg(`adjVol deg=${data.degrees} ${state.mute === '1' ? 'muteVol' : 'vol'} →${newVolume}`)
+
   if (newVolume >= 0 && newVolume <= 100) {
     currentVolume = newVolume
+    realVolume = newVolume  // keep our authoritative level in step with the optimistic spin
 
     // optimistic update of the display to make it a more fluid UX. Changing the level also
-    // unmutes the player, so clear mute locally too - otherwise updateDisplay would keep
-    // reading the bar level from muteVolume (and stay faded) until the next poll catches up.
+    // unmutes the player, so clear mute locally too - otherwise updateDisplay would keep the
+    // fade on (and, until this fix, read a stale bar level) until the next poll catches up.
     state.mute = '0'
     state.volume = newVolume.toString()
     updateDisplay()
@@ -237,7 +280,9 @@ function adjustVolume(data, config) {
         // ignore stale responses from earlier requests that completed after a newer one
         if (seq !== volumeSeq) return
 
-        // capture actual result
+        // capture the player's actual level as our authoritative volume
+        const actual = parseInt(result.__text)
+        if (!isNaN(actual)) realVolume = actual
         state.volume = result.__text
         updateDisplay()
       })
