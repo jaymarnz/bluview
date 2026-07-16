@@ -27,6 +27,16 @@ function playerRequest(command, options) {
   })
 }
 
+// pull the 0-100 percentage level out of a /Volume response. It is the element's text - the
+// attributes (db, mute, ...) are not what we want, but their presence is why this helper exists:
+//    /Volume  -> <volume db="-25.4" mute="0" ...>69</volume>  ->  { volume: { _db:.., __text:'69' } }
+//    /Status  -> <volume>69</volume>                          ->  { volume: '69' }
+// x2js only nests the text under __text when the element carries attributes, so accept both shapes.
+function volumeLevel(result) {
+  const volume = result && result.volume
+  return (volume && volume.__text !== undefined) ? volume.__text : volume
+}
+
 // set the src attribute of an image object to a normalized URL provided by BluOS
 // hide the image if there is no url
 function setImageSrc(obj, url, options) {

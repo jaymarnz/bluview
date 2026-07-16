@@ -16,7 +16,9 @@ let state = {} // latest player status
 let dbgBuf = []
 function dbg(msg) {
   if (!config.logStatus) return
-  dbgBuf.push(new Date().toISOString().substr(11, 12) + ' ' + msg)
+  // local time, not UTC - these lines are read off the tablet against the wall clock
+  const d = new Date()
+  dbgBuf.push(`${d.toTimeString().slice(0, 8)}.${String(d.getMilliseconds()).padStart(3, '0')} ${msg}`)
   if (dbgBuf.length > 34) dbgBuf.shift()
   const el = document.getElementById('dbglog')
   if (el) el.textContent = dbgBuf.join('\n')
@@ -131,7 +133,10 @@ async function updatePlayer() {
 
   state = resp.status || {}
   etag = state._etag
-  dbg(`POLL mute=${state.mute} vol=${state.volume}`)
+  // state is logged because BluOS's player state is an open set (play, pause, stop, stream,
+  // connecting, ...) while isPlaying() only accepts play/stream - anything else reads as
+  // "not playing" on the display, and this line is the only way to tell that apart from a bug here.
+  dbg(`POLL state=${state.state} mute=${state.mute} vol=${state.volume}`)
   // sync our authoritative volume from the player, so external changes (front-panel/app) show up.
   // Only trust the poll's volume when unmuted (BluOS reports 0 while muted) and when we're not
   // mid-spin (currentVolume, which is fresher than a lagging poll).
@@ -148,7 +153,11 @@ function isPlaying() {
 }
 
 function isMute() { // must return 0 or 1 since it is used in an arithmetic expression to toggle
-  let mute = parseInt(state.mute)
+  const mute = parseInt(state.mute)
+  // a status without a readable mute must not poison the toggle: 1 - NaN is NaN, which would send
+  // Volume?mute=NaN to the player. The range check below can't catch it because every NaN
+  // comparison is false, so treat an unreadable mute as unmuted.
+  if (isNaN(mute)) return 0
   if (mute < 0 || mute > 1) throw new Error(`invalid mute value: ${mute}`)
   return mute
 }

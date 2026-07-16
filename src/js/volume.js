@@ -144,7 +144,9 @@ function buttonClick(data, config) {
 }
 
 function shortPress(config) {
-  dbg(`shortPress mute=${state.mute} isMute=${isMute()}`)
+  // note dbg's argument is evaluated even when the log is off, so keep calls out of it that are
+  // only valid further down (isMute() is logged in toggleMute, past the guards below)
+  dbg(`shortPress state=${state.state} mute=${state.mute}`)
   if (config.logStatus) console.log(`shortPress in state: ${state.state}, mute: ${state.mute}`)
 
   if (state.state === 'pause') longPress(config) // if paused then a short press is the same as a long press
@@ -164,7 +166,9 @@ function longPress(config) {
 
 function toggleMute(config) {
   if (config.logStatus) console.log('toggleMute')
-  setMute(config, 1 - isMute())
+  const current = isMute() // the value the toggle inverts - if this is stale the mute goes the wrong way
+  dbg(`toggleMute isMute=${current} → ${1 - current}`)
+  setMute(config, 1 - current)
 }
 
 function setMute(config, value) {
@@ -222,6 +226,7 @@ function reconcileAdjustingVolume() {
       divergentMutePolls = 0
     } else if (++divergentMutePolls >= 2) {
       optimisticMute = undefined
+      divergentMutePolls = 0
     } else {
       state.mute = optimisticMute
     }
@@ -280,10 +285,14 @@ function adjustVolume(data, config) {
         // ignore stale responses from earlier requests that completed after a newer one
         if (seq !== volumeSeq) return
 
-        // capture the player's actual level as our authoritative volume
-        const actual = parseInt(result.__text)
-        if (!isNaN(actual)) realVolume = actual
-        state.volume = result.__text
+        // capture the player's actual 0-100 level as our authoritative volume. It arrives as the
+        // text of <volume>, which x2js nests under result.volume.__text because the element has
+        // attributes - result.__text (what this used to read) is always undefined. See volumeLevel.
+        const actual = parseInt(volumeLevel(result))
+        if (!isNaN(actual)) {
+          realVolume = actual
+          state.volume = actual.toString()
+        }
         updateDisplay()
       })
       .catch((error) => console.error(error))
